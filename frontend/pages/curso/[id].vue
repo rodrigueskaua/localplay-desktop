@@ -209,7 +209,7 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
     </div>
   </div>
 
-  <div v-else class="flex flex-col lg:flex-row h-[calc(100vh-56px)] overflow-hidden animate-fade-in">
+  <div v-else class="relative flex flex-col lg:flex-row h-[calc(100vh-56px)] overflow-hidden animate-fade-in">
 
     <div class="flex-1 min-w-0 flex flex-col min-h-0">
 
@@ -261,23 +261,32 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
       </div>
     </div>
 
+    <!-- Botão abrir sidebar quando fechada -->
+    <button
+      v-if="!sidebarOpen"
+      class="hidden lg:flex absolute right-3 top-[calc(56px+12px)] z-20
+             w-8 h-8 items-center justify-center rounded-md border border-border
+             bg-card text-muted-foreground hover:text-foreground hover:bg-secondary transition"
+      @click="sidebarOpen = true"
+    >
+      <PanelRightOpen class="w-4 h-4" />
+    </button>
+
     <aside
       class="flex flex-col border-t lg:border-t-0 lg:border-l border-border bg-card
-             lg:transition-[width] lg:duration-200 overflow-hidden
-             h-64 lg:h-auto"
-      :class="sidebarOpen ? 'lg:w-80' : 'lg:w-10'"
+             lg:transition-[width,opacity] lg:duration-200 overflow-hidden
+             h-64 lg:h-auto shrink-0"
+      :class="sidebarOpen ? 'lg:w-80 lg:opacity-100' : 'lg:w-0 lg:opacity-0 lg:border-l-0'"
     >
-      <div class="hidden lg:flex h-11 items-center shrink-0 border-b border-border"
-           :class="sidebarOpen ? 'justify-between px-4' : 'justify-center'">
-        <span v-if="sidebarOpen" class="text-xs font-semibold text-foreground/70 uppercase tracking-wider truncate mr-2">
+      <div class="hidden lg:flex h-11 items-center justify-between px-4 shrink-0 border-b border-border">
+        <span class="text-xs font-semibold text-foreground/70 uppercase tracking-wider truncate mr-2">
           {{ curso.nome }}
         </span>
         <button
           class="text-muted-foreground hover:text-foreground transition shrink-0"
           @click="sidebarOpen = !sidebarOpen"
         >
-          <PanelRightClose v-if="sidebarOpen" class="w-4 h-4" />
-          <PanelRightOpen v-else class="w-4 h-4" />
+          <PanelRightClose class="w-4 h-4" />
         </button>
       </div>
 
