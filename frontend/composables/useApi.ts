@@ -1,16 +1,9 @@
-function getApiBase(): string {
-  if (typeof window !== 'undefined' && (window as any).__LOCALPLAY__) {
-    return (window as any).__LOCALPLAY__.getApiBase()
-  }
-  return useRuntimeConfig().public.apiBase
-}
-
 export function useApi() {
-  const base = getApiBase()
+  const base = useRuntimeConfig().public.apiBase
 
   async function getLibrary() {
     const res = await fetch(`${base}/api/library`)
-    if (!res.ok) throw new Error('Falha ao carregar biblioteca')
+    if (!res.ok) throw new Error("Falha ao carregar biblioteca")
     return res.json()
   }
 
@@ -24,25 +17,25 @@ export function useApi() {
     const res = await fetch(`${base}/api/progress`)
     if (!res.ok) return {}
     const list: any[] = await res.json()
-    return Object.fromEntries(list.map(p => [p.video_id, p]))
+    return Object.fromEntries(list.map((p) => [p.video_id, p]))
   }
 
   async function saveProgress(videoId: string, currentTime: number, duration: number, completed: boolean) {
     await fetch(`${base}/api/progress/${encodeVideoId(videoId)}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ current_time: currentTime, duration, completed }),
     })
   }
 
   async function uploadCover(cursoNome: string, file: File) {
     const form = new FormData()
-    form.append('file', file)
+    form.append("file", file)
     const res = await fetch(`${base}/api/cover/${encodeURIComponent(cursoNome)}`, {
-      method: 'POST',
+      method: "POST",
       body: form,
     })
-    if (!res.ok) throw new Error('Falha no upload da capa')
+    if (!res.ok) throw new Error("Falha no upload da capa")
     return res.json()
   }
 
@@ -54,5 +47,5 @@ export function useApi() {
 }
 
 function encodeVideoId(id: string) {
-  return id.split('/').map(encodeURIComponent).join('/')
+  return id.split("/").map(encodeURIComponent).join("/")
 }
