@@ -1,59 +1,18 @@
 <template>
-  <div class="app-shell">
-    <header class="topbar">
-      <NuxtLink to="/" class="logo">
-        <span class="logo-icon">▶</span>
-        <span class="logo-text">LocalPlay</span>
+  <div class="min-h-screen flex flex-col bg-background text-foreground">
+    <header class="sticky top-0 z-50 h-14 flex items-center px-6 bg-card border-b border-border">
+      <NuxtLink to="/" class="flex items-center gap-2.5 font-bold text-[1.05rem] text-foreground">
+        <PlayCircle class="w-5 h-5 text-primary" />
+        <span>Local<span class="text-primary">Play</span></span>
       </NuxtLink>
     </header>
 
-    <main class="main-content">
+    <main class="flex-1">
       <slot />
     </main>
   </div>
 </template>
 
-<style scoped>
-.app-shell {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  color: var(--text);
-}
-
-.topbar {
-  height: 56px;
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: var(--text);
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.logo-icon {
-  color: var(--accent);
-  font-size: 1.3rem;
-}
-
-.main-content {
-  flex: 1;
-  padding: 32px 24px;
-  max-width: 1280px;
-  margin: 0 auto;
-  width: 100%;
-}
-</style>
+<script setup lang="ts">
+import { PlayCircle } from "lucide-vue-next"
+</script>
