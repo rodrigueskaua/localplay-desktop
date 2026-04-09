@@ -8,6 +8,7 @@
     "preview": "nuxt preview"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@vueuse/core": "^11.1.0",
     "lucide-vue-next": "^0.468.0",

@@ -67,7 +67,6 @@ onUnmounted(() => {
 
 async function initPlyr() {
   const Plyr = (await import("plyr")).default
-  await import("plyr/dist/plyr.css")
 
   plyr = new Plyr(videoEl.value!, {
     controls: [
