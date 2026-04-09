@@ -4,7 +4,7 @@ services:
     build: ./backend
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:8000"
     environment:
       VIDEOS_DIR: /videos
       COVERS_DIR: /data/covers
@@ -15,7 +15,7 @@ services:
       - ./videos:/videos:ro
       - backend-data:/data
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8000/api/library"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8000/api/library"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -25,9 +25,9 @@ services:
     build: ./frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3000}:3000"
     environment:
-      NUXT_PUBLIC_API_BASE: http://localhost:8000
+      NUXT_PUBLIC_API_BASE: http://localhost:${BACKEND_PORT:-8000}
     volumes:
       - ./frontend:/app
       - /app/node_modules

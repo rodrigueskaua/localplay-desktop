@@ -13,4 +13,4 @@ ENV NODE_ENV=development \
 
 EXPOSE 8000
 
-CMD ["node", "--watch", "src/server.js"]
+CMD ["npx", "nodemon", "src/server.js"]
