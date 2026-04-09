@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen, PlayCircle, Image, Loader2, ServerCrash, FolderOpen } from "lucide-vue-next"
+import { PlayCircle, Image, Loader2, ServerCrash, FolderOpen, BookOpen, GraduationCap } from "lucide-vue-next"
 
 const { getLibrary, getAllProgress, uploadCover } = useApi()
 
@@ -33,6 +33,10 @@ function totalAulas(curso: any): number {
   return curso.modulos.flatMap((m: any) => m.aulas).length
 }
 
+function totalModulos(curso: any): number {
+  return curso.modulos.length
+}
+
 async function handleCoverUpload(cursoNome: string, event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
@@ -46,147 +50,219 @@ async function handleCoverUpload(cursoNome: string, event: Event) {
     input.value = ""
   }
 }
+
+const totalCursos = computed(() => library.value.length)
+const cursosEmAndamento = computed(() =>
+  library.value.filter(c => {
+    const p = courseProgress(c)
+    return p > 0 && p < 100
+  }).length
+)
+const cursosConcluidos = computed(() =>
+  library.value.filter(c => courseProgress(c) === 100).length
+)
 </script>
 
 <template>
-  <div class="max-w-screen-xl mx-auto px-6 py-8">
+  <div class="flex-1 flex flex-col">
 
-    <div v-if="loading" class="flex items-center justify-center py-32">
-      <div class="relative flex items-center justify-center w-24 h-24">
-        <svg class="absolute inset-0 w-full h-full animate-spin" viewBox="0 0 96 96" fill="none">
-          <circle cx="48" cy="48" r="42" stroke="hsl(var(--border))" stroke-width="4"/>
-          <path d="M48 6 a42 42 0 0 1 42 42" stroke="hsl(var(--primary))" stroke-width="4" stroke-linecap="round"/>
+    <!-- Loading -->
+    <div v-if="loading" class="flex-1 flex flex-col items-center justify-center gap-4">
+      <div class="relative flex items-center justify-center w-20 h-20">
+        <svg class="absolute inset-0 w-full h-full animate-spin" viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="40" r="34" stroke="hsl(var(--border))" stroke-width="3"/>
+          <path d="M40 6 a34 34 0 0 1 34 34" stroke="hsl(var(--primary))" stroke-width="3" stroke-linecap="round"/>
         </svg>
-        <svg class="w-9 h-9 text-primary ml-1" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="w-7 h-7 text-primary" fill="currentColor" viewBox="0 0 24 24">
           <path d="M8 5v14l11-7z"/>
         </svg>
       </div>
+      <p class="text-sm text-muted-foreground animate-pulse">Carregando biblioteca…</p>
     </div>
 
-    <div v-else-if="error" class="flex items-center gap-3 rounded-lg border border-red-900/50 bg-red-950/40 px-5 py-4 text-red-400">
-      <ServerCrash class="w-5 h-5 shrink-0" />
-      <span>{{ error }}</span>
+    <!-- Erro -->
+    <div v-else-if="error" class="flex-1 flex items-center justify-center px-6">
+      <div class="flex items-center gap-3 rounded-xl border border-red-900/50 bg-red-950/30
+                  px-6 py-4 text-red-400 max-w-md w-full">
+        <ServerCrash class="w-5 h-5 shrink-0" />
+        <span class="text-sm">{{ error }}</span>
+      </div>
     </div>
 
-    <div v-else-if="!library.length" class="flex flex-col items-center justify-center py-32 text-center gap-4">
-      <FolderOpen class="w-14 h-14 text-primary/30" />
-      <h2 class="text-lg font-semibold text-foreground">Nenhum curso encontrado</h2>
-      <p class="text-sm text-muted-foreground max-w-sm leading-relaxed">
-        Adicione pastas com vídeos em <code class="bg-muted text-primary px-1.5 py-0.5 rounded text-xs">videos/</code>.<br/>
-        Estrutura: <code class="bg-muted text-primary px-1.5 py-0.5 rounded text-xs">videos/Curso/Módulo/aula.mp4</code>
-      </p>
+    <!-- Vazio -->
+    <div v-else-if="!library.length" class="flex-1 flex flex-col items-center justify-center text-center gap-5 px-6">
+      <div class="w-20 h-20 rounded-2xl bg-muted/50 flex items-center justify-center border border-border/50">
+        <FolderOpen class="w-10 h-10 text-primary/40" />
+      </div>
+      <div class="flex flex-col gap-2">
+        <h2 class="text-lg font-semibold text-foreground">Nenhum curso encontrado</h2>
+        <p class="text-sm text-muted-foreground max-w-xs leading-relaxed">
+          Adicione pastas com vídeos em
+          <code class="bg-muted text-primary px-1.5 py-0.5 rounded text-xs">videos/</code>
+        </p>
+        <p class="text-xs text-muted-foreground/60">
+          Estrutura: <code class="bg-muted text-primary/70 px-1.5 py-0.5 rounded text-xs">videos/Curso/Módulo/aula.mp4</code>
+        </p>
+      </div>
     </div>
 
-    <div v-else class="animate-fade-in">
-      <div class="flex items-center gap-3 mb-8">
-        <div class="p-1.5 rounded-md bg-primary/10 border border-primary/20">
-          <BookOpen class="w-5 h-5 text-primary" />
+    <!-- Biblioteca -->
+    <div v-else class="flex-1 flex flex-col animate-fade-in">
+
+      <!-- Stats badges -->
+      <div class="flex items-center justify-center gap-3 py-5 px-6 border-b border-border/30">
+        <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full
+                    bg-primary/10 border border-primary/20 text-primary">
+          <BookOpen class="w-3.5 h-3.5" />
+          <span class="text-xs font-semibold">{{ totalCursos }}</span>
+          <span class="text-xs font-medium">{{ totalCursos === 1 ? 'curso' : 'cursos' }}</span>
         </div>
-        <h1 class="text-2xl font-bold">Minha Biblioteca</h1>
+
+        <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full
+                    bg-amber-500/10 border border-amber-500/25 text-amber-400">
+          <div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
+          <span class="text-xs font-semibold">{{ cursosEmAndamento }}</span>
+          <span class="text-xs font-medium">em andamento</span>
+        </div>
+
+        <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full
+                    bg-emerald-500/10 border border-emerald-500/25 text-emerald-400">
+          <div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
+          <span class="text-xs font-semibold">{{ cursosConcluidos }}</span>
+          <span class="text-xs font-medium">{{ cursosConcluidos === 1 ? 'concluído' : 'concluídos' }}</span>
+        </div>
       </div>
 
-      <div class="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5">
-        <NuxtLink
-          v-for="curso in library"
-          :key="curso.id"
-          :to="`/curso/${encodeURIComponent(curso.id)}`"
-          class="group flex flex-col rounded-lg border border-border bg-card overflow-hidden
-                 transition-all duration-200 hover:border-primary/50 hover:-translate-y-0.5
-                 hover:shadow-xl hover:shadow-primary/10"
-        >
-          <div class="relative aspect-video bg-muted overflow-hidden">
-            <img
-              v-if="curso.cover"
-              :src="`${config.public.apiBase}${curso.cover}`"
-              :alt="curso.nome"
-              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-            />
-            <div v-else class="w-full h-full flex flex-col items-center justify-center gap-2
-                               bg-gradient-to-br from-muted to-secondary">
-              <PlayCircle class="w-10 h-10 text-primary/40" />
-              <span class="text-[10px] text-muted-foreground/50 group-hover:text-muted-foreground/80 transition-colors">
-                Sem capa
-              </span>
-            </div>
-
-            <div
-              v-if="courseProgress(curso) > 0"
-              class="absolute bottom-0 left-0 right-0 h-1 bg-black/30"
+      <!-- Grid de cursos -->
+      <div class="flex-1 flex justify-center px-8 py-8">
+        <div class="w-full max-w-screen-xl">
+          <div class="grid gap-6" style="grid-template-columns: repeat(auto-fill, minmax(220px, 220px)); justify-content: center">
+            <NuxtLink
+              v-for="curso in library"
+              :key="curso.id"
+              :to="`/curso/${encodeURIComponent(curso.id)}`"
+              class="group flex flex-col rounded-2xl border border-border/50 bg-card overflow-hidden
+                     transition-all duration-300 cursor-pointer w-full
+                     hover:border-primary/60 hover:-translate-y-2
+                     hover:shadow-2xl hover:shadow-primary/20
+                     hover:bg-card/90"
             >
-              <div
-                class="h-full transition-[width] duration-500"
-                :class="courseProgress(curso) === 100 ? 'bg-emerald-500' : 'bg-primary'"
-                :style="{ width: courseProgress(curso) + '%' }"
-              />
-            </div>
-
-            <div
-              v-if="courseProgress(curso) === 100"
-              class="absolute top-2 left-2 flex items-center gap-1 bg-emerald-500/90 text-white
-                     text-[10px] font-semibold px-2 py-0.5 rounded-full"
-            >
-              ✓ Concluído
-            </div>
-
-            <label
-              class="absolute bottom-2 right-2 flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md
-                     cursor-pointer transition-all duration-150 select-none
-                     bg-black/60 border border-white/10 text-white/70
-                     hover:bg-primary hover:border-primary hover:text-white
-                     opacity-0 group-hover:opacity-100"
-              title="Clique para trocar a capa"
-            >
-              <Loader2 v-if="uploadingFor === curso.nome" class="w-3.5 h-3.5 animate-spin" />
-              <Image v-else class="w-3.5 h-3.5" />
-              <span>{{ uploadingFor === curso.nome ? "Enviando…" : "Trocar capa" }}</span>
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                class="sr-only"
-                @change="handleCoverUpload(curso.nome, $event)"
-                @click.stop
-              />
-            </label>
-          </div>
-
-          <div class="flex flex-col gap-2.5 p-4 flex-1">
-            <h2 class="font-semibold text-sm leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-150">
-              {{ curso.nome }}
-            </h2>
-
-            <div class="flex items-center gap-1.5 text-xs">
-              <span class="px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 font-medium">
-                {{ curso.modulos.length }} módulo{{ curso.modulos.length !== 1 ? "s" : "" }}
-              </span>
-              <span class="text-muted-foreground/40">·</span>
-              <span class="text-muted-foreground">{{ totalAulas(curso) }} aulas</span>
-            </div>
-
-            <div class="mt-auto flex flex-col gap-1.5">
-              <div class="flex justify-between text-[11px]">
-                <span class="text-muted-foreground">Progresso</span>
-                <span
-                  :class="courseProgress(curso) === 100
-                    ? 'text-emerald-500 font-semibold'
-                    : courseProgress(curso) > 0
-                      ? 'text-primary font-medium'
-                      : 'text-muted-foreground'"
-                >
-                  {{ courseProgress(curso) === 100 ? "✓ Completo" : courseProgress(curso) + "%" }}
-                </span>
-              </div>
-              <div class="h-1 rounded-full bg-border overflow-hidden">
-                <div
-                  class="h-full rounded-full transition-[width] duration-500"
-                  :class="courseProgress(curso) === 100 ? 'bg-emerald-500' : 'bg-primary'"
-                  :style="{ width: courseProgress(curso) + '%' }"
+              <!-- Thumbnail -->
+              <div class="relative aspect-video bg-muted overflow-hidden">
+                <img
+                  v-if="curso.cover"
+                  :src="`${config.public.apiBase}${curso.cover}`"
+                  :alt="curso.nome"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
                 />
-              </div>
-            </div>
-          </div>
+                <div v-else class="w-full h-full flex flex-col items-center justify-center gap-2
+                                   bg-gradient-to-br from-muted via-secondary to-muted/60
+                                   group-hover:from-primary/10 group-hover:via-primary/5
+                                   transition-all duration-300">
+                  <div class="relative">
+                    <div class="absolute inset-0 rounded-full bg-primary/20 blur-md scale-150
+                                opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <PlayCircle class="relative w-12 h-12 text-primary/30 group-hover:text-primary/60 transition-colors duration-300" />
+                  </div>
+                </div>
 
-          <div class="h-px bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
-        </NuxtLink>
+                <!-- Barra de progresso -->
+                <div v-if="courseProgress(curso) > 0" class="absolute bottom-0 left-0 right-0 h-1 bg-black/40">
+                  <div
+                    class="h-full transition-[width] duration-700 ease-out"
+                    :class="courseProgress(curso) === 100 ? 'bg-emerald-500' : 'bg-primary'"
+                    :style="{ width: courseProgress(curso) + '%' }"
+                  />
+                </div>
+
+                <!-- Badge concluído -->
+                <div
+                  v-if="courseProgress(curso) === 100"
+                  class="absolute top-2 left-2 flex items-center gap-1 bg-emerald-500/90 text-white
+                         text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm shadow-lg"
+                >
+                  ✓ Concluído
+                </div>
+
+                <!-- Overlay play no hover -->
+                <div class="absolute inset-0 flex items-center justify-center
+                            bg-black/0 group-hover:bg-black/20 transition-all duration-300">
+                  <div class="w-14 h-14 rounded-full bg-white/0 group-hover:bg-white/15
+                              flex items-center justify-center backdrop-blur-sm
+                              scale-75 group-hover:scale-100 opacity-0 group-hover:opacity-100
+                              transition-all duration-300 border border-white/0 group-hover:border-white/20">
+                    <svg class="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- Botão trocar capa -->
+                <label
+                  class="absolute bottom-2 right-2 flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-md
+                         cursor-pointer transition-all duration-200 select-none
+                         bg-black/70 border border-white/10 text-white/60
+                         hover:bg-primary hover:border-primary hover:text-white
+                         opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0"
+                  title="Clique para trocar a capa"
+                  @click.prevent
+                >
+                  <Loader2 v-if="uploadingFor === curso.nome" class="w-3 h-3 animate-spin" />
+                  <Image v-else class="w-3 h-3" />
+                  <span>{{ uploadingFor === curso.nome ? "Enviando…" : "Capa" }}</span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    class="sr-only"
+                    @change="handleCoverUpload(curso.nome, $event)"
+                    @click.stop
+                  />
+                </label>
+              </div>
+
+              <!-- Informações do curso -->
+              <div class="flex flex-col gap-3 p-4 flex-1">
+                <h2 class="font-semibold text-sm leading-snug line-clamp-2
+                           text-foreground group-hover:text-primary
+                           transition-colors duration-200">
+                  {{ curso.nome }}
+                </h2>
+
+                <div class="flex items-center gap-2 text-xs text-muted-foreground/70">
+                  <span>{{ totalAulas(curso) }} aulas</span>
+                  <span class="text-border">·</span>
+                  <span>{{ totalModulos(curso) }} {{ totalModulos(curso) === 1 ? 'módulo' : 'módulos' }}</span>
+                </div>
+
+                <!-- Progresso -->
+                <div class="mt-auto flex flex-col gap-2">
+                  <div class="flex justify-between items-center text-xs">
+                    <span class="text-muted-foreground/60">Progresso</span>
+                    <span
+                      :class="[
+                        'font-semibold transition-colors duration-200',
+                        courseProgress(curso) === 100
+                          ? 'text-emerald-500'
+                          : courseProgress(curso) > 0
+                            ? 'text-primary'
+                            : 'text-muted-foreground/50'
+                      ]"
+                    >
+                      {{ courseProgress(curso) === 100 ? '✓ 100%' : courseProgress(curso) + '%' }}
+                    </span>
+                  </div>
+                  <div class="h-1.5 rounded-full bg-border/50 overflow-hidden">
+                    <div
+                      class="h-full rounded-full transition-[width] duration-700 ease-out"
+                      :class="courseProgress(curso) === 100 ? 'bg-emerald-500' : 'bg-primary'"
+                      :style="{ width: (courseProgress(curso) || 0) + '%' }"
+                    />
+                  </div>
+                </div>
+              </div>
+            </NuxtLink>
+          </div>
+        </div>
       </div>
     </div>
 
