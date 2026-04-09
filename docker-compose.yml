@@ -1,0 +1,39 @@
+services:
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      VIDEOS_DIR: /videos
+      COVERS_DIR: /data/covers
+      DB_PATH: /data/progress.db
+      PORT: 8000
+    volumes:
+      - ./backend/src:/app/src
+      - ./videos:/videos:ro
+      - backend-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8000/api/library"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NUXT_PUBLIC_API_BASE: http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  backend-data:

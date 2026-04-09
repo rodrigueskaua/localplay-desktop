@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+
+# nuxt build output
+frontend/.nuxt/
+frontend/.output/
+frontend/dist/
+frontend/build/
+
+# database & user data
+backend/progress.db
+backend/covers/
+
+# videos
+videos/
+
+# env
+.env
+.env.*
+!.env.example
+
+# os
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+npm-debug.log*
+README.md

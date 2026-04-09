@@ -1,0 +1,14 @@
+{
+  "name": "localplay-desktop",
+  "version": "1.0.0",
+  "description": "Player local de cursos em vídeo. 100% offline.",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev:backend": "cd backend && npm install && npm run dev",
+    "dev:frontend": "cd frontend && npm install && npm run dev",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+  }
+}

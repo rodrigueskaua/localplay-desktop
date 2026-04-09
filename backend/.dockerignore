@@ -1,0 +1,4 @@
+node_modules
+covers/
+progress.db
+*.db
