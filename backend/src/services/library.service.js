@@ -31,16 +31,49 @@ function findCover(cursoNome) {
   return null;
 }
 
-function buildAula(filePath) {
-  const id = toVideoId(filePath);
-  return { id, nome: basename(filePath, extname(filePath)), arquivo: id };
+function isVideoFile(name) {
+  return VIDEO_EXTENSIONS.has(extname(name).toLowerCase());
+}
+
+function firstVideoIn(dir) {
+  for (const entry of readdirSync(dir).sort(naturalSort)) {
+    const full = join(dir, entry);
+    const stat = statSync(full);
+    if (stat.isFile() && isVideoFile(entry)) return toVideoId(full);
+    if (stat.isDirectory()) {
+      const found = firstVideoIn(full);
+      if (found) return found;
+    }
+  }
+  return null;
 }
 
 function scanModulo(dir) {
-  return readdirSync(dir)
-    .sort(naturalSort)
-    .filter((f) => VIDEO_EXTENSIONS.has(extname(f).toLowerCase()))
-    .map((f) => buildAula(join(dir, f)));
+  const entries = readdirSync(dir).sort(naturalSort);
+
+  const videosDirectos = entries.filter(
+    (f) => statSync(join(dir, f)).isFile() && isVideoFile(f)
+  );
+
+  if (videosDirectos.length > 0) {
+    return videosDirectos.map((f) => {
+      const full = join(dir, f);
+      return { id: toVideoId(full), nome: basename(f, extname(f)), arquivo: toVideoId(full) };
+    });
+  }
+
+  const aulas = [];
+  for (const entry of entries) {
+    const full = join(dir, entry);
+    const stat = statSync(full);
+    if (!stat.isDirectory()) continue;
+
+    const videoId = firstVideoIn(full);
+    if (videoId) {
+      aulas.push({ id: videoId, nome: entry, arquivo: videoId });
+    }
+  }
+  return aulas;
 }
 
 export function getLibrary() {
@@ -51,17 +84,20 @@ export function getLibrary() {
     .filter((name) => statSync(join(VIDEOS_DIR, name)).isDirectory())
     .flatMap((cursoName) => {
       const cursoPath = join(VIDEOS_DIR, cursoName);
+      const entries = readdirSync(cursoPath).sort(naturalSort);
       const modulos = [];
       const aulasRaiz = [];
 
-      for (const entry of readdirSync(cursoPath).sort(naturalSort)) {
+      for (const entry of entries) {
         const fullPath = join(cursoPath, entry);
         const stat = statSync(fullPath);
+
         if (stat.isDirectory()) {
           const aulas = scanModulo(fullPath);
           if (aulas.length) modulos.push({ nome: entry, aulas });
-        } else if (stat.isFile() && VIDEO_EXTENSIONS.has(extname(entry).toLowerCase())) {
-          aulasRaiz.push(buildAula(fullPath));
+        } else if (stat.isFile() && isVideoFile(entry)) {
+          const id = toVideoId(fullPath);
+          aulasRaiz.push({ id, nome: basename(entry, extname(entry)), arquivo: id });
         }
       }
 
@@ -70,6 +106,9 @@ export function getLibrary() {
 
       if (!modulos.length) return [];
 
-      return [{ id: cursoName, nome: cursoName, cover: findCover(cursoName), modulos }];
+      const cover = findCover(cursoName);
+      const firstVideo = modulos[0]?.aulas[0]?.id ?? null;
+
+      return [{ id: cursoName, nome: cursoName, cover, firstVideo, modulos }];
     });
 }
