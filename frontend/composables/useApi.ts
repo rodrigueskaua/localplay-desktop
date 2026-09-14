@@ -43,7 +43,27 @@ export function useApi() {
     return `${base}/api/video/${encodeVideoId(videoId)}`
   }
 
-  return { getLibrary, getProgress, getAllProgress, saveProgress, uploadCover, videoUrl }
+  async function getSettings() {
+    const res = await fetch(`${base}/api/settings`)
+    if (!res.ok) throw new Error("Falha ao carregar configurações")
+    return res.json()
+  }
+
+  async function setLibraryPath(path: string, name?: string) {
+    const res = await fetch(`${base}/api/settings/library-path`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path, name }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error ?? "Falha ao definir a pasta de vídeos")
+    return data
+  }
+
+  return {
+    getLibrary, getProgress, getAllProgress, saveProgress, uploadCover, videoUrl,
+    getSettings, setLibraryPath,
+  }
 }
 
 function encodeVideoId(id: string) {

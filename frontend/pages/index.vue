@@ -177,10 +177,16 @@ const cursosConcluidos = computed(() =>
       <div class="flex flex-col gap-2">
         <h2 class="text-lg font-semibold">Nenhum curso encontrado</h2>
         <p class="text-sm text-muted-foreground max-w-xs leading-relaxed">
-          Adicione pastas com vídeos em
-          <code class="bg-muted text-primary px-1.5 py-0.5 rounded text-xs">videos/</code>
+          Escolha uma pasta de vídeos nas configurações
         </p>
       </div>
+      <NuxtLink
+        to="/configuracoes"
+        class="text-xs font-medium px-3 py-2 rounded-md border border-border/60
+               hover:border-primary/60 bg-secondary/60 hover:bg-secondary transition-colors duration-150"
+      >
+        Ir para configurações
+      </NuxtLink>
     </div>
 
     <!-- Biblioteca -->

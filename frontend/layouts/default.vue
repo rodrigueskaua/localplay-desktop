@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ChevronLeft } from "lucide-vue-next"
+import { ChevronLeft, Settings } from "lucide-vue-next"
 
 const route = useRoute()
-const isInsideCurso = computed(() => route.path.startsWith("/curso/"))
+const showBack = computed(() => route.path !== "/")
 </script>
 
 <template>
@@ -11,9 +11,9 @@ const isInsideCurso = computed(() => route.path.startsWith("/curso/"))
                    border-b border-border/40 bg-background/80 backdrop-blur-md
                    supports-[backdrop-filter]:bg-background/60">
 
-      <!-- Voltar (só aparece dentro de curso) -->
+      <!-- Voltar (aparece em qualquer página que não seja a biblioteca) -->
       <NuxtLink
-        v-if="isInsideCurso"
+        v-if="showBack"
         to="/"
         class="flex items-center gap-1.5 text-xs font-medium text-foreground/80 hover:text-foreground
                transition-all duration-150 px-3 py-1.5 rounded-md
@@ -37,8 +37,13 @@ const isInsideCurso = computed(() => route.path.startsWith("/curso/"))
         </span>
       </NuxtLink>
 
-      <!-- Espaço direito para balancear -->
-      <div class="w-24" />
+      <!-- Configurações -->
+      <NuxtLink
+        to="/configuracoes"
+        class="w-24 flex justify-end text-foreground/60 hover:text-foreground transition-colors duration-150"
+      >
+        <Settings class="w-4 h-4" />
+      </NuxtLink>
     </header>
 
     <main class="flex-1 flex flex-col">
