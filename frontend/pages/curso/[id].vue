@@ -3,6 +3,7 @@ import {
   CheckCircle2, Circle,
   PanelRightClose, PanelRightOpen,
   ChevronLeft, ChevronRight,
+  ArrowLeft,
 } from "lucide-vue-next"
 
 const route = useRoute()
@@ -196,19 +197,30 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
 </script>
 
 <template>
-  <div v-if="!ready" class="flex items-center justify-center h-[calc(100vh-56px)]">
-    <div class="relative flex items-center justify-center w-24 h-24">
-      <svg class="absolute inset-0 w-full h-full animate-spin" viewBox="0 0 96 96" fill="none">
-        <circle cx="48" cy="48" r="42" stroke="hsl(var(--border))" stroke-width="4"/>
-        <path d="M48 6 a42 42 0 0 1 42 42" stroke="hsl(var(--primary))" stroke-width="4" stroke-linecap="round"/>
-      </svg>
-      <svg class="w-9 h-9 text-primary ml-1" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M8 5v14l11-7z"/>
+  <div v-if="!ready" class="flex items-center justify-center h-full">
+    <div class="relative flex items-center justify-center w-8 h-8">
+      <svg class="absolute inset-0 w-full h-full animate-spin" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="13" stroke="hsl(var(--border))" stroke-width="2.5"/>
+        <path d="M16 3 a13 13 0 0 1 13 13" stroke="hsl(var(--primary))" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
     </div>
   </div>
 
-  <div v-else class="relative flex flex-col lg:flex-row h-[calc(100vh-56px)] overflow-hidden animate-fade-in">
+  <div v-else class="flex flex-col h-full overflow-hidden animate-fade-in">
+
+    <header class="h-11 shrink-0 flex items-center gap-3 px-5 border-b border-border/50">
+      <NuxtLink
+        to="/"
+        class="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-100"
+      >
+        <ArrowLeft class="w-4 h-4" />
+        Biblioteca
+      </NuxtLink>
+      <span class="text-border/60">/</span>
+      <h1 class="text-sm font-semibold truncate">{{ curso.nome }}</h1>
+    </header>
+
+    <div class="relative flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
 
     <div class="flex-1 min-w-0 flex flex-col min-h-0">
 
@@ -294,8 +306,7 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
         <span class="text-xs text-muted-foreground">{{ currentIndex + 1 }} / {{ todasAulas.length }}</span>
       </div>
 
-      <div class="flex-1 overflow-y-auto" :class="{ 'hidden lg:block': !sidebarOpen && false }">
-        <template v-if="sidebarOpen || true">
+      <div class="flex-1 overflow-y-auto">
           <div v-for="modulo in curso.modulos" :key="modulo.nome">
             <div class="px-4 pt-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground/50 bg-card sticky top-0 z-10">
               {{ modulo.nome }}
@@ -330,10 +341,10 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
               </div>
             </div>
           </div>
-        </template>
       </div>
     </aside>
 
+    </div>
   </div>
 </template>
 

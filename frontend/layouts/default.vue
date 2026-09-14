@@ -1,52 +1,43 @@
 <script setup lang="ts">
-import { ChevronLeft, Settings } from "lucide-vue-next"
+import { Library, Settings } from "lucide-vue-next"
 
 const route = useRoute()
-const showBack = computed(() => route.path !== "/")
+
+const navItems = [
+  { to: "/", label: "Biblioteca", icon: Library, match: (p: string) => p === "/" || p.startsWith("/curso/") },
+  { to: "/configuracoes", label: "Configurações", icon: Settings, match: (p: string) => p === "/configuracoes" },
+]
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-background text-foreground">
-    <header class="sticky top-0 z-50 flex items-center py-3 px-4
-                   border-b border-border/40 bg-background/80 backdrop-blur-md
-                   supports-[backdrop-filter]:bg-background/60">
-
-      <!-- Voltar (aparece em qualquer página que não seja a biblioteca) -->
-      <NuxtLink
-        v-if="showBack"
-        to="/"
-        class="flex items-center gap-1.5 text-xs font-medium text-foreground/80 hover:text-foreground
-               transition-all duration-150 px-3 py-1.5 rounded-md
-               border border-border/60 hover:border-border bg-secondary/60 hover:bg-secondary"
-      >
-        <ChevronLeft class="w-3.5 h-3.5" />
-        Biblioteca
-      </NuxtLink>
-      <div v-else class="w-24" />
-
-      <!-- Logo centralizado -->
-      <NuxtLink to="/" class="flex-1 flex items-center justify-center gap-2.5 select-none">
-        <div class="relative flex items-center justify-center w-7 h-7">
-          <div class="absolute inset-0 rounded-full bg-primary/20 blur-sm"></div>
-          <svg class="relative w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
+  <div class="h-screen flex bg-background text-foreground overflow-hidden">
+    <aside class="w-56 shrink-0 flex flex-col bg-sidebar border-r border-border/60">
+      <div class="h-[72px] shrink-0 flex items-end gap-2 px-4 pb-3" style="-webkit-app-region: drag">
+        <div class="w-5 h-5 rounded-md bg-primary flex items-center justify-center shrink-0">
+          <svg class="w-2.5 h-2.5 text-primary-foreground" fill="currentColor" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z"/>
           </svg>
         </div>
-        <span class="text-sm font-bold tracking-tight text-foreground">
-          Local<span class="text-primary">Play</span>
-        </span>
-      </NuxtLink>
+        <span class="text-sm font-semibold tracking-tight text-sidebar-foreground">LocalPlay</span>
+      </div>
 
-      <!-- Configurações -->
-      <NuxtLink
-        to="/configuracoes"
-        class="w-24 flex justify-end text-foreground/60 hover:text-foreground transition-colors duration-150"
-      >
-        <Settings class="w-4 h-4" />
-      </NuxtLink>
-    </header>
+      <nav class="flex-1 px-2.5 py-1 flex flex-col gap-0.5">
+        <NuxtLink
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors duration-100"
+          :class="item.match(route.path)
+            ? 'bg-primary/15 text-primary'
+            : 'text-sidebar-foreground/70 hover:bg-white/5 hover:text-sidebar-foreground'"
+        >
+          <component :is="item.icon" class="w-4 h-4 shrink-0" />
+          {{ item.label }}
+        </NuxtLink>
+      </nav>
+    </aside>
 
-    <main class="flex-1 flex flex-col">
+    <main class="flex-1 min-w-0 flex flex-col overflow-hidden">
       <slot />
     </main>
   </div>

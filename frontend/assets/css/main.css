@@ -1,8 +1,4 @@
 
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/inter/700.css";
 @import "plyr/dist/plyr.css";
 
 @tailwind base;
@@ -12,27 +8,30 @@
 @layer base {
   :root,
   .dark {
-    --background:           0 0% 8%;
-    --foreground:           0 0% 95%;
+    --background:           220 9% 13%;
+    --foreground:           0 0% 98%;
 
-    --card:                 0 0% 11%;
-    --card-foreground:      0 0% 95%;
+    --sidebar:              220 11% 16%;
+    --sidebar-foreground:   220 6% 84%;
 
-    --border:               0 0% 22%;
-    --input:                0 0% 22%;
+    --card:                 220 8% 17%;
+    --card-foreground:      0 0% 98%;
 
-    --primary:              213 85% 62%;
+    --border:               220 7% 26%;
+    --input:                220 7% 26%;
+
+    --primary:              212 92% 60%;
     --primary-foreground:   0 0% 100%;
 
-    --ring:                 213 85% 62%;
-    --accent:               213 85% 62%;
+    --ring:                 212 92% 60%;
+    --accent:               212 92% 60%;
     --accent-foreground:    0 0% 100%;
 
-    --secondary:            0 0% 15%;
-    --secondary-foreground: 0 0% 88%;
+    --secondary:            220 7% 21%;
+    --secondary-foreground: 220 6% 90%;
 
-    --muted:                0 0% 14%;
-    --muted-foreground:     0 0% 62%;
+    --muted:                220 7% 20%;
+    --muted-foreground:     220 5% 65%;
 
     --radius: 0.5rem;
   }
@@ -43,13 +42,14 @@
 
   html, body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
   }
 
   a { color: inherit; text-decoration: none; }
 
-  ::-webkit-scrollbar       { width: 6px; height: 6px; }
+  ::-webkit-scrollbar       { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { border-radius: 9999px; background: hsl(var(--border)); }
-  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }
+  ::-webkit-scrollbar-thumb { border-radius: 9999px; background: hsl(var(--border)); border: 2px solid transparent; background-clip: content-box; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); background-clip: content-box; }
 }

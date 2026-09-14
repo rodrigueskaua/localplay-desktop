@@ -10,7 +10,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        sans: ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Segoe UI", "system-ui", "sans-serif"],
+      },
+      fontSize: {
+        xs:  ["12px", { lineHeight: "16px" }],
+        sm:  ["13px", { lineHeight: "18px" }],
+        base:["14.5px", { lineHeight: "21px" }],
+        lg:  ["17px", { lineHeight: "23px" }],
+        xl:  ["20px", { lineHeight: "26px" }],
+        "2xl": ["26px", { lineHeight: "32px" }],
       },
       colors: {
         border:      "hsl(var(--border))",
@@ -18,6 +26,10 @@ export default {
         ring:        "hsl(var(--ring))",
         background:  "hsl(var(--background))",
         foreground:  "hsl(var(--foreground))",
+        sidebar: {
+          DEFAULT:    "hsl(var(--sidebar))",
+          foreground: "hsl(var(--sidebar-foreground))",
+        },
         primary: {
           DEFAULT:    "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
