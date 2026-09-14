@@ -15,6 +15,10 @@ export async function uploadCover(req, reply) {
     return reply.code(400).send({ error: "Formato não suportado. Use jpg, png ou webp." });
   }
 
-  const cover = saveCover(cursoNome, ext, await data.toBuffer());
-  return reply.send({ cover });
+  try {
+    const cover = saveCover(cursoNome, ext, await data.toBuffer());
+    return reply.send({ cover });
+  } catch (err) {
+    return reply.code(400).send({ error: err.message });
+  }
 }
