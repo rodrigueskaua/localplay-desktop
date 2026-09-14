@@ -7,6 +7,9 @@ frontend/.output/
 frontend/dist/
 frontend/build/
 
+# electron build output
+electron/dist/
+
 # database & user data
 backend/progress.db
 backend/covers/

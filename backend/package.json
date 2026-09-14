@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
+    "dev": "PORT=8000 nodemon src/server.js",
     "postinstall": "node scripts/postinstall.js"
   },
   "devDependencies": {

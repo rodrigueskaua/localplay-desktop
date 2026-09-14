@@ -3,10 +3,41 @@
   "version": "1.0.0",
   "main": "main.cjs",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist:mac": "electron-builder --mac"
   },
   "devDependencies": {
+    "@electron/rebuild": "^4.2.0",
     "electron": "^33.0.0",
-    "@electron/rebuild": "^4.2.0"
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.kauarodrigues.localplay",
+    "productName": "LocalPlay",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "build/icon.icns"
+    ],
+    "extraResources": [
+      {
+        "from": "../frontend/.output/public",
+        "to": "frontend"
+      },
+      {
+        "from": "../backend",
+        "to": "backend",
+        "filter": ["**/*", "!node_modules"]
+      }
+    ],
+    "afterPack": "scripts/afterPack.cjs",
+    "mac": {
+      "icon": "build/icon.icns",
+      "category": "public.app-category.education",
+      "target": ["dmg"]
+    }
   }
 }
