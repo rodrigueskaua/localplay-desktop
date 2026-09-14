@@ -1,6 +1,7 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { progress } from "../db/schema.js";
+import { getActiveLibrary } from "./settings.service.js";
 
 function toRow(r) {
   return {
@@ -11,20 +12,38 @@ function toRow(r) {
   };
 }
 
+function requireActiveLibraryId() {
+  const library = getActiveLibrary();
+  if (!library) throw new Error("Nenhuma biblioteca ativa configurada.");
+  return library.id;
+}
+
 export function findAll() {
-  return db.select().from(progress).all().map(toRow);
+  const libraryId = requireActiveLibraryId();
+  return db
+    .select()
+    .from(progress)
+    .where(eq(progress.libraryId, libraryId))
+    .all()
+    .map(toRow);
 }
 
 export function findByVideoId(videoId) {
-  const [row] = db.select().from(progress).where(eq(progress.videoId, videoId)).all();
+  const libraryId = requireActiveLibraryId();
+  const [row] = db
+    .select()
+    .from(progress)
+    .where(and(eq(progress.libraryId, libraryId), eq(progress.videoId, videoId)))
+    .all();
   return row ? toRow(row) : null;
 }
 
 export function upsert(videoId, currentTime, duration, completed) {
+  const libraryId = requireActiveLibraryId();
   db.insert(progress)
-    .values({ videoId, currentTime, duration, completed })
+    .values({ libraryId, videoId, currentTime, duration, completed })
     .onConflictDoUpdate({
-      target: progress.videoId,
+      target: [progress.libraryId, progress.videoId],
       set: {
         currentTime,
         duration,
