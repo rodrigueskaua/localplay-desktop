@@ -1,8 +1,9 @@
 export function useApi() {
-  const base = useRuntimeConfig().public.apiBase
+  const base = (typeof window !== "undefined" && (window as any).localplay?.apiBase)
+    || useRuntimeConfig().public.apiBase
 
   async function getLibrary() {
-    const res = await fetch(`${base}/api/library`)
+    const res = await fetch(`${base}/api/library`, { cache: "no-store" })
     if (!res.ok) throw new Error("Falha ao carregar biblioteca")
     return res.json()
   }
@@ -49,20 +50,31 @@ export function useApi() {
     return res.json()
   }
 
-  async function setLibraryPath(path: string, name?: string) {
-    const res = await fetch(`${base}/api/settings/library-path`, {
-      method: "PUT",
+  async function addLibraryPath(path: string, name?: string) {
+    const res = await fetch(`${base}/api/settings/libraries`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ path, name }),
     })
     const data = await res.json()
-    if (!res.ok) throw new Error(data.error ?? "Falha ao definir a pasta de vídeos")
+    if (!res.ok) throw new Error(data.error ?? "Falha ao adicionar a pasta de vídeos")
     return data
   }
 
+  async function removeLibraryPath(id: number) {
+    const res = await fetch(`${base}/api/settings/libraries/${id}`, { method: "DELETE" })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error ?? "Falha ao remover a pasta")
+    return data
+  }
+
+  function coverUrl(cover: string) {
+    return `${base}${cover}`
+  }
+
   return {
-    getLibrary, getProgress, getAllProgress, saveProgress, uploadCover, videoUrl,
-    getSettings, setLibraryPath,
+    getLibrary, getProgress, getAllProgress, saveProgress, uploadCover, videoUrl, coverUrl,
+    getSettings, addLibraryPath, removeLibraryPath,
   }
 }
 
