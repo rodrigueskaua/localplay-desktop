@@ -23,8 +23,3 @@ export const progress = sqliteTable(
     pk: primaryKey({ columns: [table.libraryId, table.videoId] }),
   })
 );
-
-export const settings = sqliteTable("settings", {
-  key:   text("key").primaryKey(),
-  value: text("value"),
-});

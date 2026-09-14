@@ -1,8 +1,7 @@
 import { mkdirSync } from "fs";
 import Fastify from "fastify";
 import { initDb } from "./db/index.js";
-import { loadActiveLibraryFromDb } from "./services/settings.service.js";
-import { COVERS_DIR, PORT } from "./config.js";
+import { COVERS_DIR } from "./config.js";
 import corsPlugin      from "./plugins/cors.js";
 import multipartPlugin from "./plugins/multipart.js";
 import staticPlugin    from "./plugins/static.js";
@@ -14,7 +13,6 @@ import { settingsRoutes } from "./routes/settings.routes.js";
 
 mkdirSync(COVERS_DIR, { recursive: true });
 initDb();
-loadActiveLibraryFromDb();
 
 const fastify = Fastify({ logger: true });
 
@@ -28,4 +26,8 @@ await fastify.register(progressRoutes, { prefix: "/api" });
 await fastify.register(coversRoutes,   { prefix: "/api" });
 await fastify.register(settingsRoutes, { prefix: "/api" });
 
-await fastify.listen({ port: PORT, host: "0.0.0.0" });
+const port = Number(process.env.PORT ?? 0);
+await fastify.listen({ port, host: "127.0.0.1" });
+
+export { fastify };
+export const address = fastify.server.address();

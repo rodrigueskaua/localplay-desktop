@@ -1,26 +1,18 @@
-import {
-  listLibraries,
-  getActiveLibrary,
-  setActiveLibrary,
-  removeLibrary,
-} from "../services/settings.service.js";
+import { listLibraries, addLibrary, removeLibrary } from "../services/settings.service.js";
 
 export function getSettings(_req, reply) {
-  return reply.send({
-    active: getActiveLibrary(),
-    libraries: listLibraries(),
-  });
+  return reply.send({ libraries: listLibraries() });
 }
 
-export function updateLibraryPath(req, reply) {
+export function createLibrary(req, reply) {
   const { path, name } = req.body ?? {};
   if (!path || typeof path !== "string") {
     return reply.code(400).send({ error: "Informe um caminho de pasta válido." });
   }
 
   try {
-    const library = setActiveLibrary(path, name ?? null);
-    return reply.send({ active: library });
+    const library = addLibrary(path, name ?? null);
+    return reply.send({ library, libraries: listLibraries() });
   } catch (err) {
     return reply.code(400).send({ error: err.message });
   }
@@ -32,5 +24,5 @@ export function deleteLibrary(req, reply) {
     return reply.code(400).send({ error: "Id de biblioteca inválido." });
   }
   removeLibrary(id);
-  return reply.send({ ok: true });
+  return reply.send({ libraries: listLibraries() });
 }

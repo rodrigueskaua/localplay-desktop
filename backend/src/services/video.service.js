@@ -1,16 +1,16 @@
 import { createReadStream, statSync, existsSync } from "fs";
 import { resolve } from "path";
 import mime from "mime-types";
-import { getActiveLibraryPath } from "./settings.service.js";
+import { resolveVideoPath } from "./library.service.js";
 
 const CHUNK_SIZE = 256 * 1024;
 
 export function resolveVideo(videoId) {
-  const videosDir = getActiveLibraryPath();
-  if (!videosDir) return { error: "not_found" };
+  const parsed = resolveVideoPath(videoId);
+  if (!parsed) return { error: "not_found" };
 
-  const videosRoot = resolve(videosDir);
-  const videoPath = resolve(videosRoot, videoId);
+  const videosRoot = resolve(parsed.videosDir);
+  const videoPath = resolve(videosRoot, parsed.relativePath);
 
   if (!videoPath.startsWith(videosRoot + "/")) {
     return { error: "forbidden" };
