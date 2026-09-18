@@ -6,8 +6,21 @@
 [![Platform](https://img.shields.io/badge/platform-macOS-lightgrey)](https://github.com/rodrigueskaua/localplay-desktop/releases/latest)
 [![License](https://img.shields.io/github/license/rodrigueskaua/localplay-desktop)](LICENSE)
 
-Player desktop para cursos em vídeo. 100% offline, disponível para Mac.
+**Player desktop para cursos, treinamentos e conteúdos em vídeo.**
 
+O LocalPlay transforma **qualquer pasta de vídeos em uma experiência semelhante a uma plataforma de cursos**, com biblioteca, aulas, progresso na aula e conclusão.
+
+Basta selecionar uma pasta e começar a assistir. **Tudo fica salvo localmente no seu Mac**, sem upload, servidor ou internet.
+
+## Features
+
+- Seleção de uma ou mais pastas de vídeos
+- Biblioteca organizada como uma plataforma de cursos
+- Capas geradas automaticamente
+- Progresso por aula
+- Retomada de onde parou
+- Marcação de aulas concluídas
+- Avanço automático para a próxima aula
 <div align="center">
   <img src="docs/screenshots/biblioteca.png" alt="Tela da Biblioteca" width="800">
   <img src="docs/screenshots/curso.png" alt="Tela de um curso" width="800">
