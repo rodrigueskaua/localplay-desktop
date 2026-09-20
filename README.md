@@ -75,6 +75,17 @@ Compatível com Macs Apple Silicon (M1/M2/M3/M4).
 [Lucide Icons](https://lucide.dev/) <br>
 [VueUse](https://vueuse.org/) <br>
 
+## Roadmap
+
+- [ ] Assinatura e notarização do app para Mac (remover o aviso do Gatekeeper)
+- [ ] Auto-update via `electron-updater` integrado às releases do GitHub
+- [ ] Builds para Windows e Linux
+- [ ] Busca e filtro de cursos na Biblioteca
+- [ ] Favoritar/ocultar bibliotecas
+- [ ] Velocidade de reprodução e legendas
+- [ ] Testes automatizados (backend e fluxo de biblioteca)
+- [ ] CI no GitHub Actions (lint, testes e build da release)
+
 ## Desenvolvimento
 
 ### Pré-requisitos
