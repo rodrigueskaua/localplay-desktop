@@ -40,6 +40,13 @@ export function useApi() {
     return res.json()
   }
 
+  async function getDoc(docId: string): Promise<{ conteudo: string; tipo: string }> {
+    const res = await fetch(`${base}/api/doc/${encodeVideoId(docId)}`)
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error ?? "Falha ao carregar o material")
+    return data
+  }
+
   function videoUrl(videoId: string) {
     return `${base}/api/video/${encodeVideoId(videoId)}`
   }
@@ -73,7 +80,7 @@ export function useApi() {
   }
 
   return {
-    getLibrary, getProgress, getAllProgress, saveProgress, uploadCover, videoUrl, coverUrl,
+    getLibrary, getProgress, getAllProgress, saveProgress, uploadCover, videoUrl, coverUrl, getDoc,
     getSettings, addLibraryPath, removeLibraryPath,
   }
 }

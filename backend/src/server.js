@@ -10,6 +10,7 @@ import { videoRoutes }    from "./routes/video.routes.js";
 import { progressRoutes } from "./routes/progress.routes.js";
 import { coversRoutes }   from "./routes/covers.routes.js";
 import { settingsRoutes } from "./routes/settings.routes.js";
+import { docsRoutes }     from "./routes/docs.routes.js";
 
 mkdirSync(COVERS_DIR, { recursive: true });
 initDb();
@@ -25,6 +26,7 @@ await fastify.register(videoRoutes,    { prefix: "/api" });
 await fastify.register(progressRoutes, { prefix: "/api" });
 await fastify.register(coversRoutes,   { prefix: "/api" });
 await fastify.register(settingsRoutes, { prefix: "/api" });
+await fastify.register(docsRoutes,     { prefix: "/api" });
 
 const port = Number(process.env.PORT ?? 0);
 await fastify.listen({ port, host: "127.0.0.1" });
