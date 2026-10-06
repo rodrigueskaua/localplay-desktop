@@ -8,6 +8,7 @@ const { pathToFileURL } = require("url");
 const userData = app.getPath("userData");
 process.env.COVERS_DIR = path.join(userData, "covers");
 process.env.DB_PATH = path.join(userData, "progress.db");
+process.env.APP_VERSION = app.getVersion();
 
 let mainWindow;
 
@@ -108,6 +109,12 @@ async function createWindow(frontendUrl, apiBase) {
     onAddFolder: () => mainWindow?.webContents.send("adicionar-pasta"),
   });
 }
+
+ipcMain.handle("abrir-externo", async (_event, url) => {
+  if (typeof url !== "string" || !/^https:\/\/github\.com\//.test(url)) return { ok: false };
+  await shell.openExternal(url);
+  return { ok: true };
+});
 
 ipcMain.handle("open-path", async (_event, filePath) => {
   if (typeof filePath !== "string" || !filePath) return { ok: false };

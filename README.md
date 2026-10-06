@@ -33,7 +33,7 @@ Acesse a [página de releases](https://github.com/rodrigueskaua/localplay-deskto
 1. Abra o `.dmg` e arraste o LocalPlay para a pasta Aplicativos
 2. Na primeira abertura, clique com o botão direito no app e escolha "Abrir" (o app ainda não é assinado pela Apple)
 
-Compatível com Macs Apple Silicon (M1/M2/M3/M4).
+Compatível com Macs Apple Silicon (M1/M2/M3/M4) e Intel.
 
 ## Features
 
@@ -77,8 +77,9 @@ Compatível com Macs Apple Silicon (M1/M2/M3/M4).
 
 ## Roadmap
 
-- [ ] Assinatura e notarização do app para Mac (remover o aviso do Gatekeeper)
-- [ ] Auto-update via `electron-updater` integrado às releases do GitHub
+- [ ] Assinatura e notarização do app para Mac (remover o aviso do Gatekeeper, requer Apple Developer Program)
+- [x] Aviso de nova versão dentro do app
+- [ ] Auto-update via `electron-updater` (depende da assinatura)
 - [ ] Builds para Windows e Linux
 - [ ] Busca e filtro de cursos na Biblioteca
 - [ ] Favoritar/ocultar bibliotecas
