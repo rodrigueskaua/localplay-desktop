@@ -1,6 +1,6 @@
 import { readdirSync, statSync, existsSync } from "fs";
 import { join, relative, extname, basename } from "path";
-import { COVERS_DIR, VIDEO_EXTENSIONS, DOC_EXTENSIONS } from "../config.js";
+import { COVERS_DIR, VIDEO_EXTENSIONS, DOC_EXTENSIONS, IGNORED_FILES } from "../config.js";
 import { listLibraries } from "./settings.service.js";
 
 function naturalSortKey(name) {
@@ -53,45 +53,59 @@ function isDocFile(name) {
   return DOC_EXTENSIONS.has(extname(name).toLowerCase());
 }
 
+function isIgnoredFile(name) {
+  return name.startsWith("._") || IGNORED_FILES.has(name.toLowerCase());
+}
+
+function isAnexoFile(name) {
+  return !isIgnoredFile(name) && !isVideoFile(name) && !isDocFile(name);
+}
+
 function toDoc(libraryId, videosDir, dir, name) {
   const id = makeVideoId(libraryId, relative(videosDir, join(dir, name)));
   return { id, nome: basename(name, extname(name)), tipo: extname(name).toLowerCase() };
 }
 
+function toAnexo(libraryId, videosDir, dir, name) {
+  const full = join(dir, name);
+  const id = makeVideoId(libraryId, relative(videosDir, full));
+  let tamanho = 0;
+  try {
+    tamanho = statSync(full).size;
+  } catch {}
+  return { id, nome: name, tipo: extname(name).toLowerCase(), tamanho, anexo: true };
+}
+
 function collectDocs(libraryId, videosDir, dir, entries) {
-  const docNames = entries.filter((f) => {
+  const arquivos = entries.filter((f) => {
     try {
-      return statSync(join(dir, f)).isFile() && isDocFile(f);
+      return statSync(join(dir, f)).isFile();
     } catch {
       return false;
     }
   });
 
-  if (!docNames.length) return { gerais: [], porAula: new Map() };
+  const materiais = arquivos.filter((f) => isDocFile(f) || isAnexoFile(f));
+  if (!materiais.length) return { gerais: [], porAula: new Map() };
 
   const videoBases = new Set(
-    entries
-      .filter((f) => {
-        try {
-          return statSync(join(dir, f)).isFile() && isVideoFile(f);
-        } catch {
-          return false;
-        }
-      })
-      .map((f) => basename(f, extname(f)).toLowerCase())
+    arquivos.filter(isVideoFile).map((f) => basename(f, extname(f)).toLowerCase())
   );
 
   const gerais = [];
   const porAula = new Map();
 
-  for (const name of docNames) {
+  for (const name of materiais) {
     const base = basename(name, extname(name)).toLowerCase();
-    const doc = toDoc(libraryId, videosDir, dir, name);
+    const item = isDocFile(name)
+      ? toDoc(libraryId, videosDir, dir, name)
+      : toAnexo(libraryId, videosDir, dir, name);
+
     if (videoBases.has(base)) {
       if (!porAula.has(base)) porAula.set(base, []);
-      porAula.get(base).push(doc);
+      porAula.get(base).push(item);
     } else {
-      gerais.push(doc);
+      gerais.push(item);
     }
   }
 
@@ -170,6 +184,7 @@ function scanCursoPasta(libraryId, videosDir, cursoName, cursoPath, idPrefix) {
     if (stat.isDirectory()) {
       const { aulas, docs } = scanModulo(libraryId, videosDir, fullPath);
       if (aulas.length) modulos.push({ nome: entry, aulas, docs });
+      else docsCurso.push(...docs);
     } else if (stat.isFile() && isVideoFile(entry)) {
       const id = toVideoId(libraryId, videosDir, fullPath);
       aulasRaiz.push({

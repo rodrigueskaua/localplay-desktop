@@ -1,4 +1,4 @@
-import { readDoc } from "../services/docs.service.js";
+import { readDoc, resolveAnexo } from "../services/docs.service.js";
 
 const STATUS = { not_found: 404, forbidden: 403, too_large: 413 };
 
@@ -20,5 +20,20 @@ export function getDoc(req, reply) {
   } catch (err) {
     req.log.error(err);
     return reply.code(500).send({ error: "Não foi possível ler o material." });
+  }
+}
+
+export function getAnexoPath(req, reply) {
+  try {
+    const fileId = Array.isArray(req.params["*"]) ? req.params["*"].join("/") : req.params["*"];
+    const result = resolveAnexo(decodeURIComponent(fileId));
+
+    if (result.error) {
+      return reply.code(STATUS[result.error] ?? 400).send({ error: MENSAGENS[result.error] });
+    }
+    return reply.send(result);
+  } catch (err) {
+    req.log.error(err);
+    return reply.code(500).send({ error: "Não foi possível localizar o arquivo." });
   }
 }
