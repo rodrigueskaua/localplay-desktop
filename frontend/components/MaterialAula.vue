@@ -134,7 +134,7 @@ watch(() => props.docs, () => {
         </button>
       </div>
 
-      <div class="px-4 sm:px-6 py-4 max-h-[40vh] overflow-y-auto">
+      <div class="selectable px-4 sm:px-6 py-4 max-h-[40vh] overflow-y-auto">
         <p v-if="erro" class="text-sm text-red-400 mb-3">{{ erro }}</p>
 
         <template v-if="textos.length">

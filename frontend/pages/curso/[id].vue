@@ -225,16 +225,20 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
 
   <div v-else class="flex flex-col h-full overflow-hidden animate-fade-in">
 
-    <header class="h-11 shrink-0 flex items-center gap-3 px-5 border-b border-border/50">
+    <header
+      class="h-[52px] shrink-0 flex items-center gap-2.5 px-5 border-b border-border/50"
+      style="-webkit-app-region: drag"
+    >
       <NuxtLink
         to="/"
-        class="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-100"
+        class="flex items-center gap-1 text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors duration-100"
+        style="-webkit-app-region: no-drag"
       >
         <ArrowLeft class="w-4 h-4" />
         Biblioteca
       </NuxtLink>
       <span class="text-border/60">/</span>
-      <h1 class="text-sm font-semibold truncate">{{ curso.nome }}</h1>
+      <h1 class="text-[13px] font-semibold truncate">{{ curso.nome }}</h1>
     </header>
 
     <div class="relative flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">

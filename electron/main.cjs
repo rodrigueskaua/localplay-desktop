@@ -1,4 +1,5 @@
 const { app, BrowserWindow, dialog, ipcMain, shell } = require("electron");
+const { aplicarMenu } = require("./menu.cjs");
 const path = require("path");
 const http = require("http");
 const fs = require("fs");
@@ -64,7 +65,9 @@ async function createWindow(frontendUrl, apiBase) {
     minWidth: 860,
     minHeight: 560,
     titleBarStyle: "hiddenInset",
-    trafficLightPosition: { x: 14, y: 14 },
+    trafficLightPosition: { x: 18, y: 18 },
+    vibrancy: "sidebar",
+    visualEffectState: "active",
     backgroundColor: "#1e2023",
     icon: path.join(__dirname, "build", "icon.icns"),
     webPreferences: {
@@ -81,6 +84,29 @@ async function createWindow(frontendUrl, apiBase) {
   });
 
   mainWindow.loadURL(frontendUrl);
+
+  const prefsPath = path.join(userData, "prefs.json");
+  const idiomaStore = {
+    get() {
+      try {
+        return JSON.parse(fs.readFileSync(prefsPath, "utf8")).idioma ?? null;
+      } catch {
+        return null;
+      }
+    },
+    set(valor) {
+      try {
+        fs.writeFileSync(prefsPath, JSON.stringify({ idioma: valor }));
+      } catch {}
+    },
+  };
+
+  aplicarMenu({
+    window: mainWindow,
+    store: idiomaStore,
+    onNavigate: (rota) => mainWindow?.webContents.send("navegar", rota),
+    onAddFolder: () => mainWindow?.webContents.send("adicionar-pasta"),
+  });
 }
 
 ipcMain.handle("open-path", async (_event, filePath) => {

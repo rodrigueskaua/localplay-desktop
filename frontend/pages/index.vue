@@ -115,8 +115,11 @@ const cursosConcluidos = computed(() =>
 <template>
   <div class="flex-1 flex flex-col min-h-0">
 
-    <header class="h-11 shrink-0 flex items-center justify-between px-5 border-b border-border/50">
-      <h1 class="text-lg font-semibold">Biblioteca</h1>
+    <header
+      class="h-[52px] shrink-0 flex items-center justify-between px-5 border-b border-border/50"
+      style="-webkit-app-region: drag"
+    >
+      <h1 class="text-[15px] font-semibold tracking-tight">Biblioteca</h1>
       <div v-if="library.length" class="flex items-center gap-3 text-xs text-muted-foreground">
         <span>{{ totalCursos }} {{ totalCursos === 1 ? 'curso' : 'cursos' }}</span>
         <span v-if="cursosEmAndamento" class="flex items-center gap-1.5">

@@ -14,7 +14,10 @@ async function load() {
   loading.value = false
 }
 
-onMounted(load)
+onMounted(async () => {
+  await load()
+  if (useRoute().query.adicionar) chooseFolder()
+})
 
 async function chooseFolder() {
   const path = await (window as any).localplay?.chooseLibraryFolder?.()
@@ -47,7 +50,10 @@ async function remove(id: number) {
 
 <template>
   <div class="flex-1 flex flex-col min-h-0">
-    <header class="h-11 shrink-0 flex items-center px-5 border-b border-border/50">
+    <header
+      class="h-[52px] shrink-0 flex items-center px-5 border-b border-border/50"
+      style="-webkit-app-region: drag"
+    >
       <h1 class="text-lg font-semibold">Configurações</h1>
     </header>
 

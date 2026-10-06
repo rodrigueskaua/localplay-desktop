@@ -7,5 +7,7 @@ contextBridge.exposeInMainWorld("localplay", {
   chooseLibraryFolder: () => ipcRenderer.invoke("choose-library-folder"),
   openPath: (filePath) => ipcRenderer.invoke("open-path", filePath),
   showInFolder: (filePath) => ipcRenderer.invoke("show-in-folder", filePath),
+  onNavegar: (cb) => ipcRenderer.on("navegar", (_e, rota) => cb(rota)),
+  onAdicionarPasta: (cb) => ipcRenderer.on("adicionar-pasta", () => cb()),
   apiBase,
 });
