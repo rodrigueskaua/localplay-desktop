@@ -110,11 +110,11 @@ watch(() => props.docs, () => {
              text-muted-foreground hover:text-foreground transition-colors duration-100"
       @click="toggle"
     >
-      <FileText class="w-4 h-4 shrink-0" />
+      <FileText class="w-[18px] h-[18px] shrink-0" />
       <span class="text-sm font-semibold text-foreground">Material</span>
       <span class="text-xs text-muted-foreground">{{ docs.length }}</span>
       <ChevronDown
-        class="w-4 h-4 ml-auto shrink-0 transition-transform duration-200"
+        class="w-[18px] h-[18px] ml-auto shrink-0 transition-transform duration-200"
         :class="aberto && 'rotate-180'"
       />
     </button>
@@ -155,7 +155,7 @@ watch(() => props.docs, () => {
             :key="anexo.id"
             class="flex items-center gap-2.5 py-1.5 group"
           >
-            <Paperclip class="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+            <Paperclip class="w-[17px] h-[17px] shrink-0 text-muted-foreground" />
             <button
               class="text-sm text-foreground/90 hover:text-primary hover:underline truncate text-left"
               :title="`Abrir ${anexo.nome}`"
@@ -172,7 +172,7 @@ watch(() => props.docs, () => {
               title="Mostrar no Finder"
               @click="onAnexo(anexo.id, true)"
             >
-              <FolderOpen class="w-3.5 h-3.5" />
+              <FolderOpen class="w-[17px] h-[17px]" />
             </button>
           </div>
         </div>
