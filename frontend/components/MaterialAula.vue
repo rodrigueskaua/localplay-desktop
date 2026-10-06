@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { FileText, ChevronDown } from "lucide-vue-next"
+import { FileText, ChevronDown, Paperclip, FolderOpen } from "lucide-vue-next"
 
 const props = defineProps<{
-  docs: { id: string; nome: string; tipo: string }[]
+  docs: { id: string; nome: string; tipo: string; tamanho?: number; anexo?: boolean }[]
 }>()
 
-const { getDoc } = useApi()
+const { getDoc, abrirAnexo } = useApi()
+
+const textos = computed(() => props.docs.filter((d) => !d.anexo))
+const anexos = computed(() => props.docs.filter((d) => d.anexo))
 
 const aberto     = ref(false)
 const ativoId    = ref<string | null>(null)
@@ -13,8 +16,6 @@ const carregando = ref(false)
 const erro       = ref<string | null>(null)
 const html       = ref("")
 const textoPuro  = ref("")
-
-const docAtivo = computed(() => props.docs.find((d) => d.id === ativoId.value) ?? null)
 
 const MARCACAO_MD = /(\*\*|__|^#{1,6}\s|^[-*+]\s|^\d+\.\s|\[.+\]\(.+\)|`)/m
 
@@ -39,6 +40,7 @@ async function initRenderer() {
 }
 
 async function abrirDoc(id: string) {
+  const doc = props.docs.find((d) => d.id === id)
   ativoId.value = id
   erro.value = null
   html.value = ""
@@ -51,15 +53,18 @@ async function abrirDoc(id: string) {
       conteudo = (await getDoc(id)).conteudo
       cache.set(id, conteudo)
     } catch (e: any) {
-      erro.value = e.message ?? "Não foi possível carregar o material."
+      if (ativoId.value === id) erro.value = e.message ?? "Não foi possível carregar o material."
       return
     } finally {
-      carregando.value = false
+      if (ativoId.value === id) carregando.value = false
     }
   }
 
-  if (deveRenderizarMarkdown(docAtivo.value?.tipo ?? "", conteudo)) {
+  if (ativoId.value !== id) return
+
+  if (deveRenderizarMarkdown(doc?.tipo ?? "", conteudo)) {
     const r = await initRenderer()
+    if (ativoId.value !== id) return
     html.value = r(conteudo)
   } else {
     textoPuro.value = conteudo
@@ -68,8 +73,24 @@ async function abrirDoc(id: string) {
 
 async function toggle() {
   aberto.value = !aberto.value
-  if (aberto.value && !ativoId.value && props.docs.length) {
-    await abrirDoc(props.docs[0].id)
+  if (aberto.value && !ativoId.value && textos.value.length) {
+    await abrirDoc(textos.value[0].id)
+  }
+}
+
+function formatarTamanho(bytes?: number) {
+  if (!bytes) return ""
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
+async function onAnexo(id: string, revelar: boolean) {
+  erro.value = null
+  try {
+    await abrirAnexo(id, revelar)
+  } catch (e: any) {
+    erro.value = e.message ?? "Não foi possível abrir o arquivo."
   }
 }
 
@@ -78,6 +99,7 @@ watch(() => props.docs, () => {
   html.value = ""
   textoPuro.value = ""
   erro.value = null
+  cache.clear()
 })
 </script>
 
@@ -98,9 +120,9 @@ watch(() => props.docs, () => {
     </button>
 
     <div v-if="aberto" class="border-t border-border/50">
-      <div v-if="docs.length > 1" class="flex gap-1 px-4 sm:px-6 pt-3 flex-wrap">
+      <div v-if="textos.length > 1" class="flex gap-1 px-4 sm:px-6 pt-3 flex-wrap">
         <button
-          v-for="doc in docs"
+          v-for="doc in textos"
           :key="doc.id"
           class="text-xs font-medium px-2.5 py-1 rounded-md border transition"
           :class="ativoId === doc.id
@@ -113,13 +135,47 @@ watch(() => props.docs, () => {
       </div>
 
       <div class="px-4 sm:px-6 py-4 max-h-[40vh] overflow-y-auto">
-        <p v-if="carregando" class="text-sm text-muted-foreground">Carregando…</p>
-        <p v-else-if="erro" class="text-sm text-red-400">{{ erro }}</p>
-        <pre
-          v-else-if="textoPuro"
-          class="text-sm leading-relaxed whitespace-pre-wrap break-words font-sans text-foreground/90"
-        >{{ textoPuro }}</pre>
-        <div v-else class="material-prose" v-html="html" />
+        <p v-if="erro" class="text-sm text-red-400 mb-3">{{ erro }}</p>
+
+        <template v-if="textos.length">
+          <p v-if="carregando" class="text-sm text-muted-foreground">Carregando…</p>
+          <pre
+            v-else-if="textoPuro"
+            class="text-sm leading-relaxed whitespace-pre-wrap break-words font-sans text-foreground/90"
+          >{{ textoPuro }}</pre>
+          <div v-else class="material-prose" v-html="html" />
+        </template>
+
+        <div v-if="anexos.length" :class="textos.length && 'mt-4 pt-4 border-t border-border/50'">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-foreground/50 mb-2">
+            Arquivos
+          </p>
+          <div
+            v-for="anexo in anexos"
+            :key="anexo.id"
+            class="flex items-center gap-2.5 py-1.5 group"
+          >
+            <Paperclip class="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+            <button
+              class="text-sm text-foreground/90 hover:text-primary hover:underline truncate text-left"
+              :title="`Abrir ${anexo.nome}`"
+              @click="onAnexo(anexo.id, false)"
+            >
+              {{ anexo.nome }}
+            </button>
+            <span class="text-xs text-muted-foreground shrink-0">
+              {{ formatarTamanho(anexo.tamanho) }}
+            </span>
+            <button
+              class="ml-auto shrink-0 text-muted-foreground hover:text-foreground transition
+                     opacity-0 group-hover:opacity-100 focus:opacity-100"
+              title="Mostrar no Finder"
+              @click="onAnexo(anexo.id, true)"
+            >
+              <FolderOpen class="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
