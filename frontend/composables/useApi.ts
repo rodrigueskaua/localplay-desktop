@@ -47,6 +47,18 @@ export function useApi() {
     return data
   }
 
+  async function abrirAnexo(fileId: string, revelar = false) {
+    const res = await fetch(`${base}/api/anexo/${encodeVideoId(fileId)}`)
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error ?? "Falha ao localizar o arquivo")
+
+    const ponte = (window as any).localplay
+    if (!ponte) throw new Error("Abrir arquivos só funciona no app desktop.")
+
+    const r = revelar ? await ponte.showInFolder(data.caminho) : await ponte.openPath(data.caminho)
+    if (!r?.ok) throw new Error("Não foi possível abrir o arquivo.")
+  }
+
   function videoUrl(videoId: string) {
     return `${base}/api/video/${encodeVideoId(videoId)}`
   }
@@ -80,7 +92,7 @@ export function useApi() {
   }
 
   return {
-    getLibrary, getProgress, getAllProgress, saveProgress, uploadCover, videoUrl, coverUrl, getDoc,
+    getLibrary, getProgress, getAllProgress, saveProgress, uploadCover, videoUrl, coverUrl, getDoc, abrirAnexo,
     getSettings, addLibraryPath, removeLibraryPath,
   }
 }
