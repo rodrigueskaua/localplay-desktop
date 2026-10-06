@@ -11,3 +11,6 @@ export const PORT       = parseInt(process.env.PORT ?? "8000", 10);
 
 export const VIDEO_EXTENSIONS = new Set([".mp4", ".mov", ".mkv", ".webm", ".avi", ".m4v"]);
 export const COVER_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp"]);
+export const DOC_EXTENSIONS   = new Set([".md", ".markdown", ".txt"]);
+
+export const MAX_DOC_SIZE = 512 * 1024;
