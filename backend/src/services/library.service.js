@@ -1,6 +1,6 @@
 import { readdirSync, statSync, existsSync } from "fs";
 import { join, relative, extname, basename } from "path";
-import { COVERS_DIR, VIDEO_EXTENSIONS } from "../config.js";
+import { COVERS_DIR, VIDEO_EXTENSIONS, DOC_EXTENSIONS, IGNORED_FILES } from "../config.js";
 import { listLibraries } from "./settings.service.js";
 
 function naturalSortKey(name) {
@@ -49,6 +49,73 @@ function isVideoFile(name) {
   return VIDEO_EXTENSIONS.has(extname(name).toLowerCase());
 }
 
+function isDocFile(name) {
+  return DOC_EXTENSIONS.has(extname(name).toLowerCase());
+}
+
+function isIgnoredFile(name) {
+  return name.startsWith("._") || IGNORED_FILES.has(name.toLowerCase());
+}
+
+function isAnexoFile(name) {
+  return !isIgnoredFile(name) && !isVideoFile(name) && !isDocFile(name);
+}
+
+function toDoc(libraryId, videosDir, dir, name) {
+  const id = makeVideoId(libraryId, relative(videosDir, join(dir, name)));
+  return { id, nome: basename(name, extname(name)), tipo: extname(name).toLowerCase() };
+}
+
+function toAnexo(libraryId, videosDir, dir, name) {
+  const full = join(dir, name);
+  const id = makeVideoId(libraryId, relative(videosDir, full));
+  let tamanho = 0;
+  try {
+    tamanho = statSync(full).size;
+  } catch {}
+  return { id, nome: name, tipo: extname(name).toLowerCase(), tamanho, anexo: true };
+}
+
+function collectDocs(libraryId, videosDir, dir, entries) {
+  const arquivos = entries.filter((f) => {
+    try {
+      return statSync(join(dir, f)).isFile();
+    } catch {
+      return false;
+    }
+  });
+
+  const materiais = arquivos.filter((f) => isDocFile(f) || isAnexoFile(f));
+  if (!materiais.length) return { gerais: [], porAula: new Map() };
+
+  const videoBases = new Set(
+    arquivos.filter(isVideoFile).map((f) => basename(f, extname(f)).toLowerCase())
+  );
+
+  const gerais = [];
+  const porAula = new Map();
+
+  for (const name of materiais) {
+    const base = basename(name, extname(name)).toLowerCase();
+    const item = isDocFile(name)
+      ? toDoc(libraryId, videosDir, dir, name)
+      : toAnexo(libraryId, videosDir, dir, name);
+
+    if (videoBases.has(base)) {
+      if (!porAula.has(base)) porAula.set(base, []);
+      porAula.get(base).push(item);
+    } else {
+      gerais.push(item);
+    }
+  }
+
+  return { gerais, porAula };
+}
+
+function docsDaAula(porAula, fileName) {
+  return porAula.get(basename(fileName, extname(fileName)).toLowerCase()) ?? [];
+}
+
 const MAX_SCAN_DEPTH = 8;
 
 function firstVideoIn(libraryId, videosDir, dir, depth = 0) {
@@ -68,17 +135,19 @@ function firstVideoIn(libraryId, videosDir, dir, depth = 0) {
 
 function scanModulo(libraryId, videosDir, dir) {
   const entries = readdirSync(dir).sort(naturalSort);
+  const { gerais, porAula } = collectDocs(libraryId, videosDir, dir, entries);
 
   const videosDirectos = entries.filter(
     (f) => statSync(join(dir, f)).isFile() && isVideoFile(f)
   );
 
   if (videosDirectos.length > 0) {
-    return videosDirectos.map((f) => {
+    const aulas = videosDirectos.map((f) => {
       const full = join(dir, f);
       const id = toVideoId(libraryId, videosDir, full);
-      return { id, nome: basename(f, extname(f)), arquivo: id };
+      return { id, nome: basename(f, extname(f)), arquivo: id, docs: docsDaAula(porAula, f) };
     });
+    return { aulas, docs: gerais };
   }
 
   const aulas = [];
@@ -89,14 +158,22 @@ function scanModulo(libraryId, videosDir, dir) {
 
     const videoId = firstVideoIn(libraryId, videosDir, full);
     if (videoId) {
-      aulas.push({ id: videoId, nome: entry, arquivo: videoId });
+      const subEntries = readdirSync(full).sort(naturalSort);
+      const sub = collectDocs(libraryId, videosDir, full, subEntries);
+      aulas.push({
+        id: videoId,
+        nome: entry,
+        arquivo: videoId,
+        docs: [...sub.gerais, ...docsDaAula(sub.porAula, basename(videoId))],
+      });
     }
   }
-  return aulas;
+  return { aulas, docs: gerais };
 }
 
 function scanCursoPasta(libraryId, videosDir, cursoName, cursoPath, idPrefix) {
   const entries = readdirSync(cursoPath).sort(naturalSort);
+  const { gerais: docsCurso, porAula } = collectDocs(libraryId, videosDir, cursoPath, entries);
   const modulos = [];
   const aulasRaiz = [];
 
@@ -105,33 +182,41 @@ function scanCursoPasta(libraryId, videosDir, cursoName, cursoPath, idPrefix) {
     const stat = statSync(fullPath);
 
     if (stat.isDirectory()) {
-      const aulas = scanModulo(libraryId, videosDir, fullPath);
-      if (aulas.length) modulos.push({ nome: entry, aulas });
+      const { aulas, docs } = scanModulo(libraryId, videosDir, fullPath);
+      if (aulas.length) modulos.push({ nome: entry, aulas, docs });
+      else docsCurso.push(...docs);
     } else if (stat.isFile() && isVideoFile(entry)) {
       const id = toVideoId(libraryId, videosDir, fullPath);
-      aulasRaiz.push({ id, nome: basename(entry, extname(entry)), arquivo: id });
+      aulasRaiz.push({
+        id,
+        nome: basename(entry, extname(entry)),
+        arquivo: id,
+        docs: docsDaAula(porAula, entry),
+      });
     }
   }
 
-  if (!modulos.length && aulasRaiz.length) modulos.push({ nome: "Aulas", aulas: aulasRaiz });
-  else if (aulasRaiz.length) modulos.unshift({ nome: "Introdução", aulas: aulasRaiz });
+  if (!modulos.length && aulasRaiz.length) modulos.push({ nome: "Aulas", aulas: aulasRaiz, docs: [] });
+  else if (aulasRaiz.length) modulos.unshift({ nome: "Introdução", aulas: aulasRaiz, docs: [] });
 
   if (!modulos.length) return null;
 
   const cover = findCover(`${idPrefix}${cursoName}`);
   const firstVideo = modulos[0]?.aulas[0]?.id ?? null;
 
-  return { id: `${idPrefix}${cursoName}`, nome: cursoName, cover, firstVideo, modulos };
+  return { id: `${idPrefix}${cursoName}`, nome: cursoName, cover, firstVideo, modulos, docs: docsCurso };
 }
 
 function scanVideosSoltos(libraryId, videosDir, entries, idPrefix) {
+  const { porAula } = collectDocs(libraryId, videosDir, videosDir, entries);
+
   const aulas = entries
     .filter((name) => statSync(join(videosDir, name)).isFile() && isVideoFile(name))
     .sort(naturalSort)
     .map((name) => {
       const fullPath = join(videosDir, name);
       const id = toVideoId(libraryId, videosDir, fullPath);
-      return { id, nome: basename(name, extname(name)), arquivo: id };
+      return { id, nome: basename(name, extname(name)), arquivo: id, docs: docsDaAula(porAula, name) };
     });
 
   if (!aulas.length) return null;
@@ -142,7 +227,8 @@ function scanVideosSoltos(libraryId, videosDir, entries, idPrefix) {
     nome: "Vídeos soltos",
     cover: findCover(cursoId),
     firstVideo: aulas[0].id,
-    modulos: [{ nome: "Vídeos", aulas }],
+    modulos: [{ nome: "Vídeos", aulas, docs: [] }],
+    docs: [],
   };
 }
 

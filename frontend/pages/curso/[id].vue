@@ -32,6 +32,23 @@ const currentIndex = computed(() =>
 const hasPrev = computed(() => currentIndex.value > 0)
 const hasNext = computed(() => currentIndex.value < todasAulas.value.length - 1)
 
+const docsVisiveis = computed(() => {
+  if (!curso.value || !currentAula.value) return []
+
+  const moduloDaAula = curso.value.modulos.find((m: any) =>
+    m.aulas.some((a: any) => a.id === currentAula.value.id)
+  )
+
+  const todos = [
+    ...(currentAula.value.docs ?? []),
+    ...(moduloDaAula?.docs ?? []),
+    ...(curso.value.docs ?? []),
+  ]
+
+  const vistos = new Set<string>()
+  return todos.filter((d: any) => !vistos.has(d.id) && vistos.add(d.id))
+})
+
 const courseProgressPercent = computed(() => {
   const aulas = todasAulas.value
   if (!aulas.length) return 0
@@ -270,6 +287,8 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
           </span>
         </div>
       </div>
+
+      <MaterialAula :docs="docsVisiveis" />
     </div>
 
     <!-- Botão abrir sidebar quando fechada -->

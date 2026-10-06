@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain } = require("electron");
+const { app, BrowserWindow, dialog, ipcMain, shell } = require("electron");
 const path = require("path");
 const http = require("http");
 const fs = require("fs");
@@ -82,6 +82,18 @@ async function createWindow(frontendUrl, apiBase) {
 
   mainWindow.loadURL(frontendUrl);
 }
+
+ipcMain.handle("open-path", async (_event, filePath) => {
+  if (typeof filePath !== "string" || !filePath) return { ok: false };
+  const erro = await shell.openPath(filePath);
+  return erro ? { ok: false, erro } : { ok: true };
+});
+
+ipcMain.handle("show-in-folder", async (_event, filePath) => {
+  if (typeof filePath !== "string" || !filePath) return { ok: false };
+  shell.showItemInFolder(filePath);
+  return { ok: true };
+});
 
 ipcMain.handle("choose-library-folder", async () => {
   const result = await dialog.showOpenDialog(mainWindow, {
