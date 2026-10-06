@@ -313,7 +313,7 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
       :class="sidebarOpen ? 'lg:w-80 lg:opacity-100' : 'lg:w-0 lg:opacity-0 lg:border-l-0'"
     >
       <div class="hidden lg:flex h-11 items-center justify-between px-4 shrink-0 border-b border-border">
-        <span class="text-xs font-semibold text-foreground/70 uppercase tracking-wider truncate mr-2">
+        <span class="text-[11px] font-semibold text-foreground/55 tracking-wide truncate mr-2">
           {{ curso.nome }}
         </span>
         <button
@@ -331,7 +331,7 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
 
       <div class="flex-1 overflow-y-auto">
           <div v-for="modulo in curso.modulos" :key="modulo.nome">
-            <div class="px-4 pt-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground/50 bg-card sticky top-0 z-10">
+            <div class="px-4 pt-4 pb-1 text-[11px] font-semibold tracking-wide text-foreground/45 bg-card sticky top-0 z-10">
               {{ modulo.nome }}
             </div>
 
@@ -340,10 +340,10 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
               :key="aula.id"
               role="button"
               tabindex="0"
-              class="w-full text-left flex items-start gap-3 px-4 py-2.5 border-l-2 transition-all duration-100 cursor-pointer"
+              class="w-full text-left flex items-start gap-2.5 mx-2 px-2 py-[7px] rounded-md transition-colors duration-100"
               :class="currentAula?.id === aula.id
-                ? 'border-primary bg-primary/10 text-foreground'
-                : 'border-transparent hover:bg-secondary text-foreground/60 hover:text-foreground'"
+                ? 'bg-white/[0.11] text-foreground'
+                : 'text-foreground/65 hover:bg-white/[0.055] hover:text-foreground'"
               @click="selectAula(aula)"
               @keydown.enter="selectAula(aula)"
             >
@@ -357,7 +357,7 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
               </button>
 
               <div class="flex-1 min-w-0 flex flex-col gap-1.5">
-                <span class="text-sm leading-snug line-clamp-2">{{ aula.nome }}</span>
+                <span class="text-[13px] leading-snug line-clamp-2">{{ aula.nome }}</span>
                 <div v-if="!aulaCompleted(aula) && aulaProgress(aula) > 0" class="h-0.5 rounded-full bg-border overflow-hidden">
                   <div class="h-full bg-primary rounded-full" :style="{ width: aulaProgress(aula) + '%' }" />
                 </div>
