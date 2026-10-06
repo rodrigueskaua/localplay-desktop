@@ -14,8 +14,6 @@ const erro       = ref<string | null>(null)
 const html       = ref("")
 const textoPuro  = ref("")
 
-const docAtivo = computed(() => props.docs.find((d) => d.id === ativoId.value) ?? null)
-
 const MARCACAO_MD = /(\*\*|__|^#{1,6}\s|^[-*+]\s|^\d+\.\s|\[.+\]\(.+\)|`)/m
 
 function deveRenderizarMarkdown(tipo: string, conteudo: string) {
@@ -39,6 +37,7 @@ async function initRenderer() {
 }
 
 async function abrirDoc(id: string) {
+  const doc = props.docs.find((d) => d.id === id)
   ativoId.value = id
   erro.value = null
   html.value = ""
@@ -51,15 +50,18 @@ async function abrirDoc(id: string) {
       conteudo = (await getDoc(id)).conteudo
       cache.set(id, conteudo)
     } catch (e: any) {
-      erro.value = e.message ?? "Não foi possível carregar o material."
+      if (ativoId.value === id) erro.value = e.message ?? "Não foi possível carregar o material."
       return
     } finally {
-      carregando.value = false
+      if (ativoId.value === id) carregando.value = false
     }
   }
 
-  if (deveRenderizarMarkdown(docAtivo.value?.tipo ?? "", conteudo)) {
+  if (ativoId.value !== id) return
+
+  if (deveRenderizarMarkdown(doc?.tipo ?? "", conteudo)) {
     const r = await initRenderer()
+    if (ativoId.value !== id) return
     html.value = r(conteudo)
   } else {
     textoPuro.value = conteudo
@@ -78,6 +80,7 @@ watch(() => props.docs, () => {
   html.value = ""
   textoPuro.value = ""
   erro.value = null
+  cache.clear()
 })
 </script>
 
