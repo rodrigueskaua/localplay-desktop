@@ -59,6 +59,12 @@ export function useApi() {
     if (!r?.ok) throw new Error("Não foi possível abrir o arquivo.")
   }
 
+  async function checarAtualizacao(): Promise<{ disponivel: boolean; versao: string | null; pagina: string }> {
+    const res = await fetch(`${base}/api/update`)
+    if (!res.ok) throw new Error("Falha ao verificar atualizações")
+    return res.json()
+  }
+
   function videoUrl(videoId: string) {
     return `${base}/api/video/${encodeVideoId(videoId)}`
   }
@@ -92,7 +98,7 @@ export function useApi() {
   }
 
   return {
-    getLibrary, getProgress, getAllProgress, saveProgress, uploadCover, videoUrl, coverUrl, getDoc, abrirAnexo,
+    getLibrary, getProgress, getAllProgress, saveProgress, uploadCover, videoUrl, coverUrl, getDoc, abrirAnexo, checarAtualizacao,
     getSettings, addLibraryPath, removeLibraryPath,
   }
 }

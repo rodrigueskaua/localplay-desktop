@@ -14,13 +14,15 @@ Basta selecionar uma pasta e começar a assistir. **Tudo fica salvo localmente n
 
 ## Features
 
-- Seleção de uma ou mais pastas de vídeos
+- Seleção de uma ou mais pastas de vídeo
 - Biblioteca organizada como uma plataforma de cursos
-- Capas geradas automaticamente
-- Progresso por aula
-- Retomada de onde parou
+- Capas geradas automaticamente a partir dos próprios vídeos
+- Progresso por aula, retomada de onde parou e avanço automático para a próxima aula
 - Marcação de aulas concluídas
-- Avanço automático para a próxima aula
+- Velocidade de reprodução
+- Material de apoio junto da aula: arquivos de texto lidos na própria tela e demais arquivos abertos no app do sistema
+- 100% offline, nenhum dado sai da máquina
+
 <div align="center">
   <img src="docs/screenshots/biblioteca.png" alt="Tela da Biblioteca" width="800">
   <img src="docs/screenshots/curso.png" alt="Tela de um curso" width="800">
@@ -28,20 +30,21 @@ Basta selecionar uma pasta e começar a assistir. **Tudo fica salvo localmente n
 
 ## Download
 
-Acesse a [página de releases](https://github.com/rodrigueskaua/localplay-desktop/releases/latest) e baixe o `LocalPlay-<versão>-arm64.dmg`.
+Acesse a [página de releases](https://github.com/rodrigueskaua/localplay-desktop/releases/latest) e baixe o instalador do seu Mac:
+
+| Mac | Arquivo |
+|---|---|
+| Apple Silicon (M1, M2, M3, M4) | `LocalPlay-<versão>-arm64.dmg` |
+| Intel | `LocalPlay-<versão>.dmg` |
 
 1. Abra o `.dmg` e arraste o LocalPlay para a pasta Aplicativos
-2. Na primeira abertura, clique com o botão direito no app e escolha "Abrir" (o app ainda não é assinado pela Apple)
+2. Na primeira abertura, remova a quarentena do download:
 
-Compatível com Macs Apple Silicon (M1/M2/M3/M4).
+```sh
+sudo xattr -dr com.apple.quarantine /Applications/LocalPlay.app
+```
 
-## Features
-
-- Seleção de pasta de vídeos via diálogo nativo, com suporte a múltiplas pastas simultâneas
-- Biblioteca unificada com capas geradas automaticamente a partir dos próprios vídeos
-- Progresso por aula (retomar, marcar como concluído, avanço automático)
-- Interface nativa de app Mac
-- 100% offline, nenhum dado sai da máquina
+O app ainda não é assinado pela Apple, e por isso o macOS pode mostrar a mensagem "LocalPlay está danificado e não pode ser aberto". O arquivo está íntegro: a mensagem vem da quarentena aplicada a downloads, que o comando acima remove. Em versões recentes do macOS, o atalho de clicar com o botão direito e escolher "Abrir" pode não resolver nesse caso.
 
 ## Stack
 
@@ -77,12 +80,15 @@ Compatível com Macs Apple Silicon (M1/M2/M3/M4).
 
 ## Roadmap
 
-- [ ] Assinatura e notarização do app para Mac (remover o aviso do Gatekeeper)
-- [ ] Auto-update via `electron-updater` integrado às releases do GitHub
-- [ ] Builds para Windows e Linux
-- [ ] Busca e filtro de cursos na Biblioteca
-- [ ] Favoritar/ocultar bibliotecas
-- [ ] Velocidade de reprodução e legendas
+Em andamento:
+
+- [ ] Windows e Linux
+- [ ] Auto-update via `electron-updater` (depende da assinatura)
+
+Próximos:
+
+- [ ] Reconhecer vídeos pelo conteúdo, e não só pela extensão, para arquivos de download sem extensão
+- [ ] Favoritar e ocultar bibliotecas
 - [ ] Testes automatizados (backend e fluxo de biblioteca)
 - [ ] CI no GitHub Actions (lint, testes e build da release)
 

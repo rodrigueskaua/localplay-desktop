@@ -11,6 +11,7 @@ import { progressRoutes } from "./routes/progress.routes.js";
 import { coversRoutes }   from "./routes/covers.routes.js";
 import { settingsRoutes } from "./routes/settings.routes.js";
 import { docsRoutes }     from "./routes/docs.routes.js";
+import { updateRoutes }   from "./routes/update.routes.js";
 
 mkdirSync(COVERS_DIR, { recursive: true });
 initDb();
@@ -27,6 +28,7 @@ await fastify.register(progressRoutes, { prefix: "/api" });
 await fastify.register(coversRoutes,   { prefix: "/api" });
 await fastify.register(settingsRoutes, { prefix: "/api" });
 await fastify.register(docsRoutes,     { prefix: "/api" });
+await fastify.register(updateRoutes,   { prefix: "/api" });
 
 const port = Number(process.env.PORT ?? 0);
 await fastify.listen({ port, host: "127.0.0.1" });
