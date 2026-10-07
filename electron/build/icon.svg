@@ -29,6 +29,6 @@
   </g>
 
   <g filter="url(#glow)">
-    <path d="M426 356 L426 668 Q426 702 455 685 L716 528 Q745 511 716 494 L455 339 Q426 322 426 356 Z" fill="url(#play)"/>
+    <path transform="translate(-52 -7)" d="M426 356 L426 668 Q426 702 455 685 L716 528 Q745 511 716 494 L455 339 Q426 322 426 356 Z" fill="url(#play)"/>
   </g>
 </svg>
