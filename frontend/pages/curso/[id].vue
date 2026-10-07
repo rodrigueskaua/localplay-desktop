@@ -215,26 +215,25 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
 
 <template>
   <div v-if="!ready" class="flex items-center justify-center h-full">
-    <div class="relative flex items-center justify-center w-8 h-8">
-      <svg class="absolute inset-0 w-full h-full animate-spin" viewBox="0 0 32 32" fill="none">
-        <circle cx="16" cy="16" r="13" stroke="hsl(var(--border))" stroke-width="2.5"/>
-        <path d="M16 3 a13 13 0 0 1 13 13" stroke="hsl(var(--primary))" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-    </div>
+    <MarcaLogo :tamanho="40" pulsando />
   </div>
 
   <div v-else class="flex flex-col h-full overflow-hidden animate-fade-in">
 
-    <header class="h-11 shrink-0 flex items-center gap-3 px-5 border-b border-border/50">
+    <header
+      class="h-[52px] shrink-0 flex items-center gap-2.5 pl-[88px] pr-5 border-b border-border/40"
+      style="-webkit-app-region: drag"
+    >
       <NuxtLink
         to="/"
-        class="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-100"
+        class="flex items-center gap-1 text-[15px] font-medium text-muted-foreground hover:text-foreground transition-colors duration-100"
+        style="-webkit-app-region: no-drag"
       >
-        <ArrowLeft class="w-4 h-4" />
+        <ArrowLeft class="w-[18px] h-[18px]" />
         Biblioteca
       </NuxtLink>
       <span class="text-border/60">/</span>
-      <h1 class="text-sm font-semibold truncate">{{ curso.nome }}</h1>
+      <h1 class="text-[15px] font-semibold truncate">{{ curso.nome }}</h1>
     </header>
 
     <div class="relative flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
@@ -259,7 +258,7 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
                      disabled:opacity-25 disabled:cursor-not-allowed"
               @click="hasPrev && selectAula(todasAulas[currentIndex - 1])"
             >
-              <ChevronLeft class="w-4 h-4" />
+              <ChevronLeft class="w-[18px] h-[18px]" />
               <span class="hidden sm:inline">Anterior</span>
             </button>
             <button
@@ -270,7 +269,7 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
               @click="hasNext && selectAula(todasAulas[currentIndex + 1])"
             >
               <span class="hidden sm:inline">Próxima</span>
-              <ChevronRight class="w-4 h-4" />
+              <ChevronRight class="w-[18px] h-[18px]" />
             </button>
           </div>
         </div>
@@ -299,7 +298,7 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
              bg-card text-muted-foreground hover:text-foreground hover:bg-secondary transition"
       @click="sidebarOpen = true"
     >
-      <PanelRightOpen class="w-4 h-4" />
+      <PanelRightOpen class="w-[18px] h-[18px]" />
     </button>
 
     <aside
@@ -309,14 +308,14 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
       :class="sidebarOpen ? 'lg:w-80 lg:opacity-100' : 'lg:w-0 lg:opacity-0 lg:border-l-0'"
     >
       <div class="hidden lg:flex h-11 items-center justify-between px-4 shrink-0 border-b border-border">
-        <span class="text-xs font-semibold text-foreground/70 uppercase tracking-wider truncate mr-2">
+        <span class="text-[13px] font-semibold text-foreground/55 tracking-wide truncate mr-2">
           {{ curso.nome }}
         </span>
         <button
           class="text-muted-foreground hover:text-foreground transition shrink-0"
           @click="sidebarOpen = !sidebarOpen"
         >
-          <PanelRightClose class="w-4 h-4" />
+          <PanelRightClose class="w-[18px] h-[18px]" />
         </button>
       </div>
 
@@ -327,7 +326,7 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
 
       <div class="flex-1 overflow-y-auto">
           <div v-for="modulo in curso.modulos" :key="modulo.nome">
-            <div class="px-4 pt-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground/50 bg-card sticky top-0 z-10">
+            <div class="px-4 pt-4 pb-1 text-[13px] font-semibold tracking-wide text-foreground/45 bg-card sticky top-0 z-10">
               {{ modulo.nome }}
             </div>
 
@@ -336,10 +335,10 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
               :key="aula.id"
               role="button"
               tabindex="0"
-              class="w-full text-left flex items-start gap-3 px-4 py-2.5 border-l-2 transition-all duration-100 cursor-pointer"
+              class="w-full text-left flex items-start gap-2.5 mx-2 px-2 py-[7px] rounded-md transition-colors duration-100"
               :class="currentAula?.id === aula.id
-                ? 'border-primary bg-primary/10 text-foreground'
-                : 'border-transparent hover:bg-secondary text-foreground/60 hover:text-foreground'"
+                ? 'bg-white/[0.11] text-foreground'
+                : 'text-foreground/65 hover:bg-white/[0.055] hover:text-foreground'"
               @click="selectAula(aula)"
               @keydown.enter="selectAula(aula)"
             >
@@ -348,12 +347,12 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
                 :title="aulaCompleted(aula) ? 'Marcar como não concluída' : 'Marcar como concluída'"
                 @click.stop="toggleCompleted(aula, $event)"
               >
-                <CheckCircle2 v-if="aulaCompleted(aula)" class="w-4 h-4 text-primary" />
-                <Circle v-else class="w-4 h-4 text-foreground/25 group-hover/check:text-primary/70 transition-colors" />
+                <CheckCircle2 v-if="aulaCompleted(aula)" class="w-[18px] h-[18px] text-primary" />
+                <Circle v-else class="w-[18px] h-[18px] text-foreground/25 group-hover/check:text-primary/70 transition-colors" />
               </button>
 
               <div class="flex-1 min-w-0 flex flex-col gap-1.5">
-                <span class="text-sm leading-snug line-clamp-2">{{ aula.nome }}</span>
+                <span class="text-[15px] leading-snug line-clamp-2">{{ aula.nome }}</span>
                 <div v-if="!aulaCompleted(aula) && aulaProgress(aula) > 0" class="h-0.5 rounded-full bg-border overflow-hidden">
                   <div class="h-full bg-primary rounded-full" :style="{ width: aulaProgress(aula) + '%' }" />
                 </div>

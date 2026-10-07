@@ -1,6 +1,6 @@
 {
   "name": "localplay-electron",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "main.cjs",
   "scripts": {
     "start": "electron .",
@@ -18,9 +18,9 @@
       "output": "dist"
     },
     "files": [
-      "main.cjs",
-      "preload.cjs",
-      "build/icon.icns"
+      "*.cjs",
+      "build/icon.icns",
+      "build/entitlements.mac.plist"
     ],
     "extraResources": [
       {
@@ -30,14 +30,31 @@
       {
         "from": "../backend",
         "to": "backend",
-        "filter": ["**/*", "!node_modules"]
+        "filter": [
+          "**/*",
+          "!node_modules",
+          "!**/*.map",
+          "!**/.DS_Store"
+        ]
       }
     ],
     "afterPack": "scripts/afterPack.cjs",
     "mac": {
       "icon": "build/icon.icns",
       "category": "public.app-category.education",
-      "target": ["dmg"]
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
     }
   }
 }

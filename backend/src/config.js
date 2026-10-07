@@ -15,3 +15,7 @@ export const DOC_EXTENSIONS   = new Set([".md", ".markdown", ".txt"]);
 export const IGNORED_FILES    = new Set([".ds_store", "thumbs.db", "desktop.ini", ".localized"]);
 
 export const MAX_DOC_SIZE = 256 * 1024;
+
+export const APP_VERSION   = process.env.APP_VERSION ?? "0.0.0";
+export const RELEASES_API  = "https://api.github.com/repos/rodrigueskaua/localplay-desktop/releases/latest";
+export const RELEASES_PAGE = "https://github.com/rodrigueskaua/localplay-desktop/releases/latest";
