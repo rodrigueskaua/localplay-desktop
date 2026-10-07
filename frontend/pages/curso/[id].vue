@@ -215,18 +215,13 @@ async function toggleCompleted(aula: any, event: MouseEvent) {
 
 <template>
   <div v-if="!ready" class="flex items-center justify-center h-full">
-    <div class="relative flex items-center justify-center w-8 h-8">
-      <svg class="absolute inset-0 w-full h-full animate-spin" viewBox="0 0 32 32" fill="none">
-        <circle cx="16" cy="16" r="13" stroke="hsl(var(--border))" stroke-width="2.5"/>
-        <path d="M16 3 a13 13 0 0 1 13 13" stroke="hsl(var(--primary))" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-    </div>
+    <MarcaLogo :tamanho="40" pulsando />
   </div>
 
   <div v-else class="flex flex-col h-full overflow-hidden animate-fade-in">
 
     <header
-      class="h-[64px] shrink-0 flex items-center gap-2.5 pl-[88px] pr-5 border-b border-border/40"
+      class="h-[52px] shrink-0 flex items-center gap-2.5 pl-[88px] pr-5 border-b border-border/40"
       style="-webkit-app-region: drag"
     >
       <NuxtLink

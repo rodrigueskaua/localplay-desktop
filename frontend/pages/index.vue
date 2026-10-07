@@ -155,10 +155,13 @@ const cursosConcluidos = computed(() =>
   <div class="flex-1 flex flex-col min-h-0">
 
     <header
-      class="h-[64px] shrink-0 flex items-center gap-3 pl-[88px] pr-4 border-b border-border/40"
+      class="h-[52px] shrink-0 flex items-center gap-3 pl-[88px] pr-4 border-b border-border/40"
       style="-webkit-app-region: drag"
     >
-      <h1 class="text-[19px] font-semibold tracking-tight shrink-0">Biblioteca</h1>
+      <div class="flex items-center gap-2.5 shrink-0">
+        <MarcaLogo :tamanho="19" />
+        <h1 class="text-[19px] font-semibold tracking-tight">Biblioteca</h1>
+      </div>
 
       <div class="flex-1" />
 
@@ -214,12 +217,7 @@ const cursosConcluidos = computed(() =>
     <div class="flex-1 min-h-0 overflow-y-auto">
 
       <div v-if="loading" class="h-full flex flex-col items-center justify-center gap-3">
-        <div class="relative flex items-center justify-center w-8 h-8">
-          <svg class="absolute inset-0 w-full h-full animate-spin" viewBox="0 0 32 32" fill="none">
-            <circle cx="16" cy="16" r="13" stroke="hsl(var(--border))" stroke-width="2.5"/>
-            <path d="M16 3 a13 13 0 0 1 13 13" stroke="hsl(var(--primary))" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-        </div>
+        <MarcaLogo :tamanho="40" pulsando />
         <p class="text-[15px] text-muted-foreground">Carregando biblioteca…</p>
       </div>
 
@@ -232,8 +230,8 @@ const cursosConcluidos = computed(() =>
       </div>
 
       <div v-else-if="!library.length" class="h-full flex flex-col items-center justify-center text-center gap-4 px-6">
-        <div class="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center">
-          <FolderOpen class="w-6 h-6 text-muted-foreground" />
+        <div class="w-16 h-16 rounded-[18px] bg-secondary flex items-center justify-center">
+          <MarcaLogo :tamanho="30" />
         </div>
         <div class="flex flex-col gap-1.5">
           <h2 class="text-[19px] font-semibold">Nenhum curso ainda</h2>
