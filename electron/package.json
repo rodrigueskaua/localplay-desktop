@@ -18,9 +18,9 @@
       "output": "dist"
     },
     "files": [
-      "main.cjs",
-      "preload.cjs",
-      "build/icon.icns"
+      "*.cjs",
+      "build/icon.icns",
+      "build/entitlements.mac.plist"
     ],
     "extraResources": [
       {
@@ -32,7 +32,9 @@
         "to": "backend",
         "filter": [
           "**/*",
-          "!node_modules"
+          "!node_modules",
+          "!**/*.map",
+          "!**/.DS_Store"
         ]
       }
     ],
@@ -48,7 +50,11 @@
             "x64"
           ]
         }
-      ]
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
     }
   }
 }
