@@ -1,6 +1,6 @@
 {
   "name": "localplay-desktop",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Player local de cursos em vídeo. 100% offline.",
   "engines": {
     "node": ">=20.0.0",
