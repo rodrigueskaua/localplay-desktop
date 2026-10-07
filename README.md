@@ -24,9 +24,20 @@ Basta selecionar uma pasta e começar a assistir. **Tudo fica salvo localmente n
 - 100% offline, nenhum dado sai da máquina
 
 <div align="center">
+  <img src="docs/screenshots/apresentacao.gif" alt="Passeio pelas telas do LocalPlay: Biblioteca em grade e em lista, player com material de apoio e preferências" width="800">
+</div>
+
+<details>
+<summary>Ver as telas em tamanho original</summary>
+
+<br>
+
+<div align="center">
   <img src="docs/screenshots/biblioteca.png" alt="Tela da Biblioteca" width="800">
   <img src="docs/screenshots/curso.png" alt="Tela de um curso" width="800">
 </div>
+
+</details>
 
 ## Download
 
