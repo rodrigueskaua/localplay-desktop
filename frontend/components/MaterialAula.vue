@@ -100,6 +100,7 @@ watch(() => props.docs, () => {
   textoPuro.value = ""
   erro.value = null
   cache.clear()
+  if (aberto.value && textos.value.length) abrirDoc(textos.value[0].id)
 })
 </script>
 

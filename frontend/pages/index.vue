@@ -309,7 +309,7 @@ const cursosConcluidos = computed(() =>
           </div>
 
           <div class="flex flex-col gap-[2px] min-w-0 px-0.5">
-            <h2 class="text-[15px] font-medium leading-[1.3] line-clamp-2 min-h-[42px]">
+            <h2 class="text-[15px] font-medium leading-[1.3] line-clamp-2">
               {{ nomeLimpo(curso.nome) }}
             </h2>
             <p class="text-[14px] text-muted-foreground truncate">
