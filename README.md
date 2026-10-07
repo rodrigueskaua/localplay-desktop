@@ -1,4 +1,4 @@
-<img src="docs/screenshots/icon.png" alt="LocalPlay" width="72" height="72">
+<img src="docs/screenshots/icon.png" alt="LocalPlay" width="96" height="96">
 
 # LocalPlay
 
